@@ -1,0 +1,75 @@
+---
+import { getCollection } from "astro:content";
+
+const livelloOrdine: Record<string, number> = { main: 0, tecnico: 1, partner: 2 };
+const sponsors = (await getCollection("sponsor")).sort(
+  (a, b) => livelloOrdine[a.data.livello] - livelloOrdine[b.data.livello]
+);
+---
+{sponsors.length > 0 && (
+  <section class="sponsor-strip" aria-labelledby="sponsor-title">
+    <div class="inner">
+      <h2 id="sponsor-title" class="font-display">I nostri sponsor</h2>
+      <ul class="logos">
+        {sponsors.map((sponsor) => (
+          <li class:list={["logo-item", sponsor.data.livello]}>
+            {sponsor.data.url ? (
+              <a href={sponsor.data.url} target="_blank" rel="noopener noreferrer" class="logo-link">
+                <img src={sponsor.data.logo} alt={`Logo ${sponsor.data.nome}`} class="logo-img" />
+              </a>
+            ) : (
+              <img src={sponsor.data.logo} alt={`Logo ${sponsor.data.nome}`} class="logo-img" />
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+)}
+<style>
+  .sponsor-strip {
+    background: oklch(0.95 0.01 265);
+    padding: clamp(2.5rem, 6vw, 4rem) clamp(1rem, 4vw, 2.5rem);
+  }
+  .inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .sponsor-strip h2 {
+    color: var(--bg);
+    font-size: clamp(1.5rem, 3.5vw, 2rem);
+    margin: 0 0 2rem;
+  }
+  .logos {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(1.5rem, 4vw, 3rem);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .logo-img {
+    height: 2.5rem;
+    width: auto;
+    filter: grayscale(1);
+    transition: filter 0.3s var(--ease-out-quart);
+  }
+  .logo-item.main .logo-img {
+    height: 4rem;
+  }
+  .logo-item.tecnico .logo-img {
+    height: 3rem;
+  }
+  .logo-item:hover .logo-img,
+  .logo-item:focus-within .logo-img {
+    filter: grayscale(0);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .logo-img {
+      transition: none;
+    }
+  }
+</style>
