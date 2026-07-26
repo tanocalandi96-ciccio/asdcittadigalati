@@ -1,0 +1,99 @@
+---
+// Hero scroll-driven: canvas + sequenza WebP, scrub con smoothing.
+// frameIndex() è 1-based (vedi src/lib/scrub.ts); i file su disco sono
+// 0-based (f-000.webp...), quindi l'indice n si mappa sul file n - 1.
+---
+<section class="hero" id="hero">
+  <div class="stage">
+    <canvas id="hero-canvas" aria-hidden="true"></canvas>
+    <img id="hero-fallback" src="/hero-frames/desktop/f-069.webp" alt="Stemma ASD Città di Galati che si compone sul campo del Ducezio-Parafioriti" />
+    <div class="overlay" id="hero-overlay">
+      <h1>ASD Città<br />di Galati</h1>
+      <a class="cta" href="/stagione">La stagione</a>
+    </div>
+  </div>
+</section>
+<style>
+  .hero { height: 250vh; }
+  .stage { position: sticky; top: 0; height: 100vh; overflow: hidden; }
+  canvas, #hero-fallback { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  canvas { display: none; }
+  .overlay { position: absolute; inset: auto 0 12vh 0; text-align: center; opacity: 0; transform: translateY(16px); transition: opacity 0.6s var(--ease-out-quart), transform 0.6s var(--ease-out-quart); }
+  .overlay.on { opacity: 1; transform: none; }
+  .overlay h1 { font-size: clamp(3rem, 9vw, 7rem); text-shadow: 0 2px 24px color-mix(in oklch, var(--bg) 80%, transparent); }
+  .cta { display: inline-block; margin-top: 1rem; padding: 0.8rem 2rem; background: var(--giallo); color: var(--bg); font-family: var(--font-display); text-decoration: none; font-size: 1.1rem; }
+  @media (prefers-reduced-motion: reduce) { .hero { height: 100vh; } .overlay { opacity: 1; transform: none; } }
+</style>
+<script>
+  import { frameIndex, lerp } from "../lib/scrub";
+
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const canvas = document.getElementById("hero-canvas") as HTMLCanvasElement;
+  const fallback = document.getElementById("hero-fallback") as HTMLImageElement;
+  const overlay = document.getElementById("hero-overlay")!;
+
+  // Indice 1-based (contratto di frameIndex) -> nome file 0-based su disco.
+  const frameFile = (dir: string, i: number) => `/hero-frames/${dir}/f-${String(i - 1).padStart(3, "0")}.webp`;
+
+  setup();
+
+  async function setup() {
+    const portrait = matchMedia("(max-width: 720px)").matches;
+    const dir = portrait ? "mobile" : "desktop";
+    const manifest = await fetch("/hero-frames/manifest.json").then(r => r.json());
+    const count = manifest[dir].count;
+    fallback.src = frameFile(dir, count);
+
+    if (reduced) {
+      overlay.classList.add("on");
+      return;
+    }
+
+    const frames: HTMLImageElement[] = new Array(count + 1);
+    const load = (i: number) => new Promise<void>(res => {
+      const img = new Image();
+      img.onload = () => { frames[i] = img; res(); };
+      img.onerror = () => res();
+      img.src = frameFile(dir, i);
+    });
+
+    await Promise.all(Array.from({ length: 10 }, (_, k) => load(k + 1)));
+    canvas.style.display = "block";
+    fallback.style.display = "none";
+    for (let i = 11; i <= count; i++) load(i); // resto in background
+
+    const ctx = canvas.getContext("2d")!;
+    let target = 1, current = 1, raf = 0;
+
+    function draw() {
+      current = lerp(current, target, 0.18);
+      const idx = Math.round(current);
+      const img = frames[idx] ?? frames[1];
+      if (img) {
+        const { width: cw, height: ch } = canvas;
+        const s = Math.max(cw / img.width, ch / img.height);
+        const w = img.width * s, h = img.height * s;
+        ctx.drawImage(img, (cw - w) / 2, (ch - h) / 2, w, h);
+      }
+      overlay.classList.toggle("on", target >= count - 2);
+      if (Math.abs(current - target) > 0.05) raf = requestAnimationFrame(draw);
+      else raf = 0;
+    }
+
+    function onScroll() {
+      const range = (document.getElementById("hero")!.offsetHeight) - innerHeight;
+      target = frameIndex(scrollY, range, count);
+      if (!raf) raf = requestAnimationFrame(draw);
+    }
+
+    function resize() {
+      canvas.width = innerWidth * devicePixelRatio;
+      canvas.height = innerHeight * devicePixelRatio;
+      if (!raf) raf = requestAnimationFrame(draw);
+    }
+
+    addEventListener("scroll", onScroll, { passive: true });
+    addEventListener("resize", resize);
+    resize(); onScroll();
+  }
+</script>
