@@ -22,8 +22,10 @@ Regole: giallo su blu-notte = combinazione firma (come le strisce del logo). Ros
 
 ## Typography
 
-- **Display / titoli**: sans grottesco pesante e condensato (es. "Archivo Expanded/Black" o simile via Fontsource), maiuscolo per i titoli di sezione, stile grande club. Scala aggressiva: hero > 3rem mobile, ratio ≥ 1.3 tra i livelli.
-- **Testo**: sans leggibile (es. "Inter"), max 70ch, corpo 1rem/1.6.
+Voce del brand in tre parole fisiche: **orgoglioso, ruvido, spettacolare** (manifesto da stadio, gagliardetto, non brochure).
+
+- **Display / titoli**: **Anton SC** (self-hosted via Fontsource) — condensato pesante da manifesto sportivo. Maiuscolo per titoli di sezione. Scala aggressiva: hero > 3rem mobile, ratio ≥ 1.3 tra i livelli.
+- **Testo**: **Hanken Grotesk**, max 70ch, corpo 1rem/1.6.
 - Numeri (risultati, minuti, classifica): tabular-nums.
 
 ## Componenti chiave
