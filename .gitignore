@@ -6,6 +6,7 @@ dist/
 # segreti
 .env
 .env.*
+.claude/settings.local.json
 
 # OS
 Thumbs.db

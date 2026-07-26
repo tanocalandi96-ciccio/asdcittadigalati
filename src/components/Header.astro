@@ -1,0 +1,37 @@
+---
+const items = [
+  ["/", "Home"], ["/squadra", "Squadra"], ["/stagione", "Stagione"],
+  ["/news", "News"], ["/club", "Club"], ["/contatti", "Contatti"],
+];
+const path = Astro.url.pathname;
+---
+<header class="site-header">
+  <a href="/" class="brand"><img src="/img/logo.png" alt="Stemma ASD Città di Galati" width="44" height="48" /><span>Città di Galati</span></a>
+  <nav aria-label="principale">
+    <details class="menu">
+      <summary>Menu</summary>
+      <ul>
+        {items.map(([href, label]) => (
+          <li><a href={href} aria-current={path === href ? "page" : undefined}>{label}</a></li>
+        ))}
+      </ul>
+    </details>
+  </nav>
+</header>
+<style>
+  .site-header { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem clamp(1rem, 4vw, 2.5rem); position: sticky; top: 0; background: var(--bg); z-index: 50; }
+  .brand { display: flex; gap: 0.6rem; align-items: center; color: var(--text); text-decoration: none; font-family: var(--font-display); font-size: 1.15rem; white-space: nowrap; flex-shrink: 0; }
+  ul { display: flex; gap: 1.5rem; list-style: none; padding: 0; margin: 0; }
+  a { color: var(--text); text-decoration: none; }
+  a[aria-current="page"] { color: var(--giallo); text-decoration: underline; text-decoration-color: var(--giallo); text-underline-offset: 0.25rem; }
+  a:hover { color: var(--giallo); }
+  .menu summary { cursor: pointer; list-style: none; color: var(--text); font-family: var(--font-body); padding: 0.4rem 0.6rem; }
+  .menu summary::-webkit-details-marker { display: none; }
+  @media (max-width: 720px) {
+    .menu ul { flex-direction: column; gap: 0.75rem; padding-top: 0.75rem; }
+  }
+  @media (min-width: 721px) {
+    .menu summary { display: none; }
+    .menu ul { display: flex !important; }
+  }
+</style>
