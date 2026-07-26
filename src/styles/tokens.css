@@ -1,0 +1,12 @@
+:root {
+  --bg: oklch(0.18 0.05 265);
+  --surface: oklch(0.22 0.05 265);
+  --text: oklch(0.97 0.005 265);
+  --giallo: oklch(0.92 0.19 105);
+  --blu: oklch(0.47 0.28 264);
+  --rosso: oklch(0.6 0.25 27);
+  --oro: oklch(0.68 0.16 55);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --font-display: "Anton SC", sans-serif;
+  --font-body: "Hanken Grotesk", sans-serif;
+}
