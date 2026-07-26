@@ -1,0 +1,53 @@
+---
+// Cursore-pallone: sostituisce il puntatore su pointer di precisione
+// (mouse) con un pallone nei colori dello stemma, che segue, ruota
+// e si ingrandisce sugli elementi interattivi. Nessun trail, nessun
+// effetto click, nessuna animazione idle.
+//
+// Geometria: pentagono centrale + 5 spicchi che coprono l'anello
+// esterno del cerchio (ognuno da un lato del pentagono fino a ben
+// oltre il bordo), ritagliati con un clip-path circolare: il taglio
+// del cerchio genera automaticamente l'arco esterno corretto, senza
+// dover calcolare a mano gli archi SVG.
+---
+<div id="ball-cursor" aria-hidden="true">
+  <svg viewBox="0 0 36 36" width="36" height="36">
+    <defs>
+      <clipPath id="ball-clip">
+        <circle cx="18" cy="18" r="16.5" />
+      </clipPath>
+    </defs>
+    <circle cx="18" cy="18" r="16.5" fill="var(--text)" stroke="var(--oro)" stroke-width="1.5" />
+    <g clip-path="url(#ball-clip)" stroke="oklch(0.22 0.04 264)" stroke-width="0.5" stroke-linejoin="round">
+      <path fill="var(--giallo)" d="M18,11 L24.66,15.84 L37.98,11.52 L18,-3 Z" />
+      <path fill="var(--blu)" d="M24.66,15.84 L22.11,23.66 L30.33,34.98 L37.98,11.52 Z" />
+      <path fill="var(--rosso)" d="M22.11,23.66 L13.89,23.66 L5.67,34.98 L30.33,34.98 Z" />
+      <path fill="var(--blu)" d="M13.89,23.66 L11.34,15.84 L-1.98,11.52 L5.67,34.98 Z" />
+      <path fill="var(--giallo)" d="M11.34,15.84 L18,11 L18,-3 L-1.98,11.52 Z" />
+      <path fill="oklch(0.22 0.04 264)" d="M18,11 L24.66,15.84 L22.11,23.66 L13.89,23.66 L11.34,15.84 Z" />
+    </g>
+  </svg>
+</div>
+<style>
+  #ball-cursor { position: fixed; left: 0; top: 0; z-index: 9999; pointer-events: none; display: none; will-change: transform; filter: drop-shadow(0 2px 6px oklch(0.1 0.04 265 / 0.5)); }
+  :global(body.ball-cursor-on), :global(body.ball-cursor-on a), :global(body.ball-cursor-on button) { cursor: none; }
+</style>
+<script>
+  const fine = matchMedia("(pointer: fine)").matches;
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (fine && !reduced) {
+    const el = document.getElementById("ball-cursor")!;
+    document.body.classList.add("ball-cursor-on");
+    el.style.display = "block";
+    let rot = 0, lastX = 0, scale = 1;
+    addEventListener("mousemove", (e) => {
+      rot += (e.clientX - lastX) * 0.55;
+      lastX = e.clientX;
+      el.style.transform = `translate(${e.clientX - 18}px, ${e.clientY - 18}px) rotate(${rot}deg) scale(${scale})`;
+    }, { passive: true });
+    const interactive = (t: EventTarget | null) =>
+      t instanceof Element && t.closest("a, button, [role='button'], input, textarea, summary");
+    addEventListener("mouseover", (e) => { if (interactive(e.target)) scale = 1.8; });
+    addEventListener("mouseout", (e) => { if (interactive(e.target)) scale = 1; });
+  }
+</script>
