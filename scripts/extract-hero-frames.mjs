@@ -49,6 +49,7 @@ for (const { key, src, out, frames, scale } of jobs) {
     console.warn(
       `ATTENZIONE: ${key} resta sopra budget (${totalKb} KB > ${BUDGET_KB[key]} KB) anche alla qualita' minima testata (q:v=${usedQuality}).`
     );
+    process.exitCode = 1;
   }
 
   if (files.length !== frames) {
