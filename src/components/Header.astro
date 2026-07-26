@@ -8,6 +8,11 @@ const path = Astro.url.pathname;
 <header class="site-header">
   <a href="/" class="brand"><img src="/img/logo.png" alt="Stemma ASD Città di Galati" width="44" height="48" /><span>Città di Galati</span></a>
   <nav aria-label="principale">
+    <ul class="nav-desktop">
+      {items.map(([href, label]) => (
+        <li><a href={href} aria-current={path === href ? "page" : undefined}>{label}</a></li>
+      ))}
+    </ul>
     <details class="menu">
       <summary>Menu</summary>
       <ul>
@@ -25,13 +30,12 @@ const path = Astro.url.pathname;
   a { color: var(--text); text-decoration: none; }
   a[aria-current="page"] { color: var(--giallo); text-decoration: underline; text-decoration-color: var(--giallo); text-underline-offset: 0.25rem; }
   a:hover { color: var(--giallo); }
+  .menu { display: none; }
   .menu summary { cursor: pointer; list-style: none; color: var(--text); font-family: var(--font-body); padding: 0.4rem 0.6rem; }
   .menu summary::-webkit-details-marker { display: none; }
   @media (max-width: 720px) {
+    .nav-desktop { display: none; }
+    .menu { display: block; }
     .menu ul { flex-direction: column; gap: 0.75rem; padding-top: 0.75rem; }
-  }
-  @media (min-width: 721px) {
-    .menu summary { display: none; }
-    .menu ul { display: flex !important; }
   }
 </style>
