@@ -30,7 +30,7 @@
 </div>
 <style>
   #ball-cursor { position: fixed; left: 0; top: 0; z-index: 9999; pointer-events: none; display: none; will-change: transform; filter: drop-shadow(0 2px 6px oklch(0.1 0.04 265 / 0.5)); }
-  :global(body.ball-cursor-on), :global(body.ball-cursor-on a), :global(body.ball-cursor-on button), :global(body.ball-cursor-on [role="button"]), :global(body.ball-cursor-on input), :global(body.ball-cursor-on textarea), :global(body.ball-cursor-on summary) { cursor: none; }
+  :global(body.ball-cursor-on), :global(body.ball-cursor-on a), :global(body.ball-cursor-on button), :global(body.ball-cursor-on [role="button"]), :global(body.ball-cursor-on input), :global(body.ball-cursor-on textarea), :global(body.ball-cursor-on summary) { cursor: none !important; }
 </style>
 <script>
   const fine = matchMedia("(pointer: fine)").matches;
