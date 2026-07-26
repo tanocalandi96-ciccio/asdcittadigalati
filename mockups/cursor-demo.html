@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Demo puntatore — Città di Galati</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: system-ui, sans-serif;
+    background: #0a1030;
+    color: #fff;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  header {
+    padding: 24px 32px;
+    display:flex; gap:12px; align-items:center; flex-wrap:wrap;
+  }
+  h1 { font-size: 20px; margin-right: 16px; }
+  .tab {
+    padding: 10px 20px;
+    border: 2px solid #ffd400;
+    background: transparent;
+    color: #ffd400;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    border-radius: 6px;
+  }
+  .tab.active { background:#ffd400; color:#0a1030; }
+  main { padding: 40px 32px; max-width: 900px; }
+  .hint { opacity:.6; margin-bottom: 32px; }
+  .links { display:flex; gap:16px; flex-wrap:wrap; margin-top: 40px; }
+  .fake-link {
+    padding: 16px 28px;
+    background: #16205c;
+    border: 1px solid #2a3a8c;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  .fake-link:hover { background: #c8102e; }
+
+  /* variante 1: cursore = pallone */
+  body.mode-1 { cursor: none; }
+  body.mode-1 .tab, body.mode-1 .fake-link { cursor: none; }
+  #ballCursor {
+    position: fixed;
+    left: 0; top: 0;
+    font-size: 28px;
+    pointer-events: none;
+    z-index: 9999;
+    display: none;
+    transition: transform .15s ease-out;
+    will-change: transform;
+  }
+  body.mode-1 #ballCursor { display: block; }
+
+  /* variante 2: particelle scia */
+  .trailBall {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+    animation: trailFade .7s ease-out forwards;
+    will-change: transform, opacity;
+  }
+  @keyframes trailFade {
+    0%   { opacity: 1; transform: translate(-50%,-50%) scale(1) rotate(0deg); }
+    100% { opacity: 0; transform: translate(-50%,-50%) scale(.2) rotate(180deg) translateY(30px); }
+  }
+
+  /* variante 3: pallone fisico */
+  #physBall {
+    position: fixed;
+    left: 0; top: 0;
+    font-size: 34px;
+    pointer-events: none;
+    z-index: 9999;
+    display: none;
+    will-change: transform;
+    filter: drop-shadow(0 6px 6px rgba(0,0,0,.5));
+  }
+  body.mode-3 #physBall { display: block; }
+</style>
+</head>
+<body class="mode-1">
+<div id="ballCursor">⚽</div>
+<div id="physBall">⚽</div>
+
+<header>
+  <h1>Effetto puntatore</h1>
+  <button class="tab active" data-mode="1">1 · Cursore = pallone</button>
+  <button class="tab" data-mode="2">2 · Scia di palloni</button>
+  <button class="tab" data-mode="3">3 · Pallone con fisica</button>
+</header>
+
+<main>
+  <p class="hint">Muovi il mouse. Nella variante 3 clicca per calciare il pallone.</p>
+  <h2 style="font-size:56px; line-height:1.1; margin-bottom:16px;">ASD CITTÀ<br>DI GALATI</h2>
+  <p style="opacity:.75; max-width:480px;">Passa sopra i bottoni qui sotto per vedere come reagisce il puntatore sugli elementi interattivi.</p>
+  <div class="links">
+    <div class="fake-link">Squadra</div>
+    <div class="fake-link">Stagione</div>
+    <div class="fake-link">News</div>
+    <div class="fake-link">Club</div>
+    <div class="fake-link">Contatti</div>
+  </div>
+</main>
+
+<script>
+(() => {
+  let mode = 1;
+  let mx = innerWidth/2, my = innerHeight/2;
+  let lastX = mx, lastY = my;
+  let rotation = 0;
+
+  const ballCursor = document.getElementById('ballCursor');
+  const physBall = document.getElementById('physBall');
+
+  // tabs
+  document.querySelectorAll('.tab').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      mode = +t.dataset.mode;
+      document.body.className = 'mode-' + mode;
+    });
+  });
+
+  // variante 2: throttle scia
+  let lastTrail = 0;
+  function spawnTrail(x, y) {
+    const now = performance.now();
+    if (now - lastTrail < 40) return;
+    lastTrail = now;
+    const el = document.createElement('div');
+    el.className = 'trailBall';
+    el.textContent = '⚽';
+    el.style.left = x + 'px';
+    el.style.top = y + 'px';
+    el.style.fontSize = (12 + Math.random()*14) + 'px';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 700);
+  }
+
+  addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    if (mode === 2) spawnTrail(mx, my);
+  });
+
+  // hover scale su elementi interattivi (variante 1)
+  let hoverScale = 1;
+  document.querySelectorAll('.fake-link, .tab').forEach(el => {
+    el.addEventListener('mouseenter', () => hoverScale = 1.8);
+    el.addEventListener('mouseleave', () => hoverScale = 1);
+  });
+
+  // variante 3: fisica
+  const phys = { x: innerWidth/2, y: innerHeight/2, vx: 0, vy: 0, rot: 0 };
+  addEventListener('click', () => {
+    if (mode !== 3) return;
+    // calcio: spinta dalla direzione cursore->palla
+    const dx = phys.x - mx, dy = phys.y - my;
+    const d = Math.hypot(dx, dy) || 1;
+    const power = Math.max(0, 28 - d/20);
+    phys.vx += (dx/d) * power;
+    phys.vy += (dy/d) * power - 6;
+  });
+
+  function frame() {
+    // rotazione dal movimento
+    const dx = mx - lastX;
+    rotation += dx * 0.6;
+    lastX = mx; lastY = my;
+
+    if (mode === 1) {
+      ballCursor.style.transform =
+        `translate(${mx-14}px, ${my-14}px) rotate(${rotation}deg) scale(${hoverScale})`;
+    }
+
+    if (mode === 3) {
+      // insegue il cursore con molla debole + gravità leggera verso il basso pagina
+      const ax = (mx - phys.x) * 0.004;
+      const ay = (my - phys.y) * 0.004;
+      phys.vx += ax; phys.vy += ay;
+      phys.vx *= 0.96; phys.vy *= 0.96;
+      phys.x += phys.vx; phys.y += phys.vy;
+      // rimbalzo sui bordi
+      if (phys.x < 17) { phys.x = 17; phys.vx *= -0.7; }
+      if (phys.x > innerWidth-17) { phys.x = innerWidth-17; phys.vx *= -0.7; }
+      if (phys.y < 17) { phys.y = 17; phys.vy *= -0.7; }
+      if (phys.y > innerHeight-17) { phys.y = innerHeight-17; phys.vy *= -0.7; }
+      phys.rot += phys.vx * 2;
+      physBall.style.transform =
+        `translate(${phys.x-17}px, ${phys.y-17}px) rotate(${phys.rot}deg)`;
+    }
+
+    requestAnimationFrame(frame);
+  }
+  frame();
+})();
+</script>
+</body>
+</html>

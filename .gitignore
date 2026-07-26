@@ -1,0 +1,12 @@
+# dipendenze e build
+node_modules/
+dist/
+.astro/
+
+# segreti
+.env
+.env.*
+
+# OS
+Thumbs.db
+.DS_Store
