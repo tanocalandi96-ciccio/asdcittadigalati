@@ -1,7 +1,7 @@
 ---
 import { WIDGET_URLS, TEAM_PAGE } from "../lib/tuttocampo";
 
-type WidgetType = "classifica" | "risultati" | "calendario";
+type WidgetType = "classifica" | "risultati" | "calendario" | "prossimaPartita";
 interface Props {
   type: WidgetType;
   title: string;
@@ -24,17 +24,24 @@ const FALLBACK_COPY: Record<WidgetType, { kicker: string; testo: string }> = {
   calendario: {
     kicker: "Calendario non ancora disponibile",
     testo:
-      "Il calendario non è ancora disponibile: la stagione 2026-27 non è ancora iniziata. Non appena viene pubblicato, qui trovi il prossimo turno in automatico.",
+      "Il calendario non è ancora disponibile: la stagione 2026-27 non è ancora iniziata. Non appena viene pubblicato, qui trovi tutte le giornate del girone.",
+  },
+  prossimaPartita: {
+    kicker: "Prossima partita non ancora fissata",
+    testo:
+      "Il calendario della stagione 2026-27 non è ancora uscito. Appena il girone parte, qui trovi data, ora e avversario del prossimo impegno in automatico.",
   },
 };
 const { kicker, testo } = FALLBACK_COPY[type];
 
 // Altezza minima diversa per tipo: la classifica di un girone ha molte righe,
-// risultati/calendario ne hanno meno. Evita tre box identici quando i widget saranno attivi.
+// risultati/calendario ne hanno meno, il box della prossima partita e' compatto.
+// Evita box identici quando i widget saranno attivi.
 const MIN_HEIGHT: Record<WidgetType, string> = {
   classifica: "520px",
   risultati: "420px",
   calendario: "400px",
+  prossimaPartita: "350px",
 };
 
 const boxId = `widget-box-${type}`;
