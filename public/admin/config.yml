@@ -1,0 +1,77 @@
+backend:
+  name: git-gateway
+  branch: main
+
+# Backend locale per test in sviluppo: decommentare insieme a `npx decap-server`
+# per scrivere le modifiche direttamente sul filesystem senza Netlify Identity.
+# Deve restare commentato/rimosso in produzione.
+# local_backend: true
+
+media_folder: "public/img/uploads"
+public_folder: "/img/uploads"
+
+locale: "it"
+
+collections:
+  - name: "news"
+    label: "News"
+    folder: "src/content/news"
+    create: true
+    slug: "{{slug}}"
+    format: "frontmatter"
+    fields:
+      - { label: "Titolo", name: "title", widget: "string", required: true }
+      - { label: "Data", name: "date", widget: "datetime", required: true }
+      - { label: "Copertina", name: "cover", widget: "image", required: false, media_folder: "/img/uploads", public_folder: "/img/uploads" }
+      - { label: "Corpo", name: "body", widget: "markdown", required: false }
+
+  - name: "giocatori"
+    label: "Rosa"
+    folder: "src/content/giocatori"
+    create: true
+    slug: "{{fields.nome}}"
+    identifier_field: "nome"
+    format: "frontmatter"
+    fields:
+      - { label: "Nome", name: "nome", widget: "string", required: true }
+      - label: "Ruolo"
+        name: "ruolo"
+        widget: "select"
+        required: true
+        options: ["Portiere", "Difensore", "Centrocampista", "Attaccante"]
+      - { label: "Numero", name: "numero", widget: "number", value_type: "int", required: false }
+      - { label: "Foto", name: "foto", widget: "image", required: false, media_folder: "/img/uploads", public_folder: "/img/uploads" }
+
+  - name: "staff"
+    label: "Staff"
+    folder: "src/content/staff"
+    create: true
+    slug: "{{fields.nome}}"
+    identifier_field: "nome"
+    format: "frontmatter"
+    fields:
+      - { label: "Nome", name: "nome", widget: "string", required: true }
+      - { label: "Incarico", name: "incarico", widget: "string", required: true }
+      - { label: "Foto", name: "foto", widget: "image", required: false, media_folder: "/img/uploads", public_folder: "/img/uploads" }
+      - { label: "Ordine", name: "ordine", widget: "number", value_type: "int", required: false, default: 99 }
+
+  - name: "sponsor"
+    label: "Sponsor"
+    folder: "src/content/sponsor"
+    create: true
+    slug: "{{fields.nome}}"
+    identifier_field: "nome"
+    format: "frontmatter"
+    fields:
+      - { label: "Nome", name: "nome", widget: "string", required: true }
+      - label: "Livello"
+        name: "livello"
+        widget: "select"
+        required: true
+        options: ["main", "tecnico", "partner"]
+      - { label: "Logo", name: "logo", widget: "image", required: true, media_folder: "/img/uploads", public_folder: "/img/uploads" }
+      - label: "Sito web"
+        name: "url"
+        widget: "string"
+        required: false
+        pattern: ["^https?://.+", "Deve essere un URL valido (es. https://esempio.it)"]
