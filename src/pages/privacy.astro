@@ -1,0 +1,117 @@
+---
+import Base from "../layouts/Base.astro";
+---
+<Base title="Privacy" description="Informativa privacy e cookie del sito ASD Città di Galati">
+  <main>
+    <section class="intro">
+      <div class="inner">
+        <h1 class="font-display">Privacy</h1>
+        <p class="kicker">Informativa sul trattamento dei dati personali e sui cookie di questo sito.</p>
+      </div>
+    </section>
+
+    <section class="policy-section">
+      <div class="inner">
+        <h2 class="font-display">Titolare del trattamento</h2>
+        <p>Il titolare del trattamento dei dati raccolti tramite questo sito è ASD Città di Galati.</p>
+        <!-- DATI-SOCIETA: ragione sociale, sede legale, P.IVA/codice fiscale, PEC (in attesa dei dati dalla società) -->
+      </div>
+    </section>
+
+    <section class="policy-section alt">
+      <div class="inner">
+        <h2 class="font-display">Dati raccolti tramite il modulo di contatto</h2>
+        <p>
+          Il modulo nella pagina <a href="/contatti">Contatti</a> invia i messaggi tramite Netlify
+          Forms: nome, email e messaggio inserito vengono trasmessi ai server di Netlify e
+          recapitati alla società per la risposta. Netlify agisce come responsabile del
+          trattamento per l'invio del modulo. Maggiori informazioni sono disponibili
+          sull'informativa privacy di Netlify, all'indirizzo netlify.com.
+        </p>
+      </div>
+    </section>
+
+    <section class="policy-section">
+      <div class="inner">
+        <h2 class="font-display">Cookie e servizi di terze parti</h2>
+        <p>
+          Questo sito non installa cookie di profilazione propri e non utilizza strumenti di
+          analisi del traffico. Alcune pagine incorporano contenuti di terze parti tramite
+          iframe, che possono impostare cookie tecnici indipendenti da noi:
+        </p>
+        <ul>
+          <li>il widget di Tuttocampo (classifica, risultati, calendario) nella pagina <a href="/stagione">Stagione</a>, quando attivo;</li>
+          <li>la mappa di OpenStreetMap nella pagina <a href="/club">Club</a>.</li>
+        </ul>
+        <p>
+          Il trattamento di questi cookie è gestito direttamente da Tuttocampo e da OpenStreetMap
+          Foundation secondo le rispettive informative privacy.
+        </p>
+      </div>
+    </section>
+
+    <section class="policy-section alt">
+      <div class="inner">
+        <h2 class="font-display">Diritti dell'interessato</h2>
+        <p>
+          Ai sensi degli articoli 15-22 del Regolamento (UE) 2016/679 (GDPR), l'interessato ha
+          diritto di accedere ai propri dati personali, richiederne la rettifica, la
+          cancellazione o la limitazione del trattamento, e di opporsi al trattamento stesso,
+          oltre al diritto alla portabilità dei dati nei casi previsti. Le richieste possono
+          essere inviate al titolare del trattamento tramite i contatti indicati nella pagina
+          <a href="/contatti">Contatti</a>. È inoltre possibile proporre reclamo al Garante per
+          la protezione dei dati personali (garanteprivacy.it).
+        </p>
+      </div>
+    </section>
+  </main>
+</Base>
+<style>
+  .inner {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .intro {
+    padding: clamp(3rem, 8vw, 5rem) clamp(1rem, 4vw, 2.5rem) clamp(1.5rem, 4vw, 2.5rem);
+  }
+  .intro h1 {
+    font-size: clamp(2.25rem, 6vw, 3.5rem);
+    margin: 0 0 0.5rem;
+  }
+  .kicker {
+    color: var(--oro);
+    max-width: 55ch;
+  }
+  .policy-section {
+    padding: clamp(2rem, 5vw, 3rem) clamp(1rem, 4vw, 2.5rem);
+  }
+  .policy-section.alt {
+    background: var(--surface);
+  }
+  .policy-section h2 {
+    font-size: clamp(1.4rem, 3.5vw, 2rem);
+    margin: 0 0 1rem;
+  }
+  .policy-section p {
+    margin: 0 0 1rem;
+    max-width: 65ch;
+  }
+  .policy-section p:last-child {
+    margin-bottom: 0;
+  }
+  .policy-section ul {
+    margin: 0 0 1rem;
+    padding-left: 1.25rem;
+    max-width: 65ch;
+  }
+  .policy-section li {
+    margin-bottom: 0.4rem;
+  }
+  .policy-section a {
+    color: var(--giallo);
+  }
+  .policy-section a:hover,
+  .policy-section a:focus-visible {
+    color: var(--oro);
+  }
+</style>

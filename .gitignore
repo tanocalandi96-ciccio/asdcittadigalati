@@ -11,3 +11,6 @@ dist/
 # OS
 Thumbs.db
 .DS_Store
+
+# tool di verifica locale
+.playwright-cli/

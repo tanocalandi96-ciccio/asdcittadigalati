@@ -1,0 +1,105 @@
+---
+// Avviso cookie informativo, non un banner di consenso: il sito non ha
+// cookie di profilazione propri ne' analytics. Segnala solo che i widget
+// di terze parti (Tuttocampo, mappa OpenStreetMap) possono impostarne.
+// Non e' un blocking wall: il contenuto della pagina resta sempre
+// consultabile e la barra non intercetta lo scroll.
+const STORAGE_KEY = "cookie-notice-dismessa";
+---
+<div class="cookie-notice" id="cookie-notice" role="region" aria-label="Informativa sui cookie">
+  <p>
+    Nessun cookie di profilazione nostro. I widget Tuttocampo e la mappa OpenStreetMap
+    possono impostarne di terze parti. <a href="/privacy">Scopri di più</a>
+    <button type="button" id="cookie-notice-dismiss">Ho capito</button>
+  </p>
+</div>
+<style>
+  .cookie-notice {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 40;
+    background: var(--surface);
+    color: var(--text);
+    padding: 0.6rem clamp(1rem, 4vw, 2.5rem);
+    border-top: 1px solid var(--oro);
+    transform: translateY(120%);
+    transition: transform 0.4s var(--ease-out-quart);
+  }
+  .cookie-notice.is-visible {
+    transform: translateY(0);
+  }
+  /* Bottone dentro il paragrafo (non un flex sibling): scorre come l'ultima
+     "parola" del testo invece di finire su una riga tutta sua, cosi' la
+     barra resta bassa anche su schermi stretti dove testo + bottone non
+     starebbero affiancati. */
+  .cookie-notice p {
+    margin: 0 auto;
+    max-width: 68ch;
+    text-align: center;
+    font-size: 0.85rem;
+  }
+  .cookie-notice a {
+    color: var(--giallo);
+  }
+  .cookie-notice button {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 0.6rem;
+    padding: 0.3rem 1.1rem;
+    background: var(--giallo);
+    color: var(--bg);
+    border: none;
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+  .cookie-notice button:hover,
+  .cookie-notice button:focus-visible {
+    background: var(--oro);
+  }
+  /* Schermi bassi (telefoni piccoli in orizzontale, iPhone SE...): la barra
+     va tenuta più compatta per non arrivare a ridosso della CTA dell'hero,
+     che nel punto finale dello scroll siede a 12vh dal fondo. */
+  @media (max-height: 700px) {
+    .cookie-notice {
+      padding: 0.4rem clamp(1rem, 4vw, 2.5rem);
+    }
+    .cookie-notice p {
+      font-size: 0.78rem;
+    }
+    .cookie-notice button {
+      padding: 0.25rem 0.9rem;
+      font-size: 0.8rem;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cookie-notice {
+      transition: none;
+    }
+  }
+</style>
+<script is:inline define:vars={{ STORAGE_KEY }}>
+  (function () {
+    var notice = document.getElementById("cookie-notice");
+    var dismiss = document.getElementById("cookie-notice-dismiss");
+    if (!notice || !dismiss) return;
+    try {
+      if (localStorage.getItem(STORAGE_KEY) !== "1") {
+        notice.classList.add("is-visible");
+      }
+    } catch (e) {
+      // localStorage non disponibile: mostra comunque l'avviso.
+      notice.classList.add("is-visible");
+    }
+    dismiss.addEventListener("click", function () {
+      notice.classList.remove("is-visible");
+      try {
+        localStorage.setItem(STORAGE_KEY, "1");
+      } catch (e) {
+        // Nessuna persistenza possibile: l'avviso ricomparirà al prossimo caricamento.
+      }
+    });
+  })();
+</script>

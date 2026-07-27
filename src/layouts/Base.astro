@@ -3,21 +3,44 @@ import "../styles/global.css";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import BallCursor from "../components/BallCursor.astro";
+import CookieNotice from "../components/CookieNotice.astro";
 interface Props { title: string; description?: string }
 const { title, description = "Sito ufficiale ASD Città di Galati" } = Astro.props;
+const fullTitle = `${title} - ASD Città di Galati`;
+// Astro.site non è ancora configurato (dominio non deciso): finché non lo sarà
+// (Task 12, deploy Netlify) queste URL restano assolute solo rispetto all'origine
+// corrente. Nessun dominio è inventato qui.
+const pageUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
+const ogImage = new URL("/img/og.jpg", Astro.site ?? Astro.url).href;
 ---
 <!doctype html>
 <html lang="it">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title} - ASD Città di Galati</title>
+    <title>{fullTitle}</title>
     <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={pageUrl} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="it_IT" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
   </head>
   <body>
     <Header />
     <slot />
     <Footer />
+    <CookieNotice />
     <BallCursor />
   </body>
 </html>
