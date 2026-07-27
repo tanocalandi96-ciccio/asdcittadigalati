@@ -1,0 +1,110 @@
+---
+import Base from "../layouts/Base.astro";
+
+// Coordinate del comune di Galati Mamertino (ME), verificate su Nominatim/OpenStreetMap
+// (query "Galati Mamertino" -> lat 38.0315592, lon 14.7725171). Le coordinate esatte del
+// campo "Ducezio-Parafioriti" non sono verificabili al momento: la mappa e' centrata sul
+// paese, non su un punto preciso del campo.
+const mapBbox = "14.7525171,38.0215592,14.7925171,38.0415592";
+const mapMarker = "38.0315592,14.7725171";
+const osmEmbedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${mapBbox}&layer=mapnik&marker=${mapMarker}`;
+const googleMapsUrl = "https://www.google.com/maps/search/?api=1&query=Campo+sportivo+Ducezio-Parafioriti%2C+Galati+Mamertino+ME";
+---
+<Base title="Club" description="La storia e il campo dell'ASD Città di Galati">
+  <main>
+    <section class="storia">
+      <div class="inner">
+        <h1 class="font-display">Il Club</h1>
+        <p>
+          Questa pagina racconterà la storia dell'ASD Città di Galati: le origini del club,
+          i momenti che hanno segnato il suo cammino e il legame con Galati Mamertino e la
+          sua comunità. I contenuti definitivi arriveranno a cura della società.
+        </p>
+        <!-- TESTO-STORIA: in attesa del testo storico definitivo dalla società -->
+      </div>
+    </section>
+
+    <section class="campo">
+      <div class="inner">
+        <h2 class="font-display">Il campo</h2>
+        <p class="campo-nome">Ducezio-Parafioriti</p>
+        <p class="campo-indirizzo">Galati Mamertino (ME), Sicilia</p>
+        <div class="map-wrap">
+          <iframe
+            title="Mappa di Galati Mamertino (ME), comune del campo Ducezio-Parafioriti"
+            src={osmEmbedUrl}
+            loading="lazy"
+          ></iframe>
+        </div>
+        <p class="map-note">
+          La mappa è centrata su Galati Mamertino: le coordinate esatte del campo non sono
+          ancora verificate.
+        </p>
+        <a class="maps-link" href={googleMapsUrl} target="_blank" rel="noopener noreferrer">
+          Apri in Google Maps
+        </a>
+      </div>
+    </section>
+  </main>
+</Base>
+<style>
+  .inner {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .storia {
+    padding: clamp(3rem, 8vw, 5rem) clamp(1rem, 4vw, 2.5rem) clamp(2rem, 5vw, 3rem);
+  }
+  .storia h1 {
+    font-size: clamp(2.25rem, 6vw, 3.5rem);
+    margin: 0 0 1.5rem;
+  }
+  .storia p {
+    max-width: 65ch;
+  }
+  .campo {
+    background: var(--surface);
+    padding: clamp(2.5rem, 6vw, 4rem) clamp(1rem, 4vw, 2.5rem) clamp(3rem, 7vw, 5rem);
+  }
+  .campo h2 {
+    font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+    margin: 0 0 1rem;
+  }
+  .campo-nome {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    font-size: 1.15rem;
+    color: var(--giallo);
+    margin: 0;
+  }
+  .campo-indirizzo {
+    margin: 0.25rem 0 1.5rem;
+  }
+  .map-wrap {
+    aspect-ratio: 16 / 9;
+    max-height: 420px;
+  }
+  .map-wrap iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+  .map-note {
+    color: var(--oro);
+    font-size: 0.85rem;
+    margin: 0.75rem 0 1.25rem;
+  }
+  .maps-link {
+    display: inline-block;
+    padding: 0.7rem 1.75rem;
+    background: var(--giallo);
+    color: var(--bg);
+    font-family: var(--font-display);
+    text-decoration: none;
+    font-size: 1rem;
+  }
+  .maps-link:hover,
+  .maps-link:focus-visible {
+    background: var(--oro);
+  }
+</style>

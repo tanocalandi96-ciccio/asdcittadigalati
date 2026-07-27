@@ -1,0 +1,5 @@
+<svg viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Segnaposto: nessuna foto disponibile">
+  <rect x="1.5" y="1.5" width="297" height="397" fill="oklch(0.22 0.05 265)" stroke="oklch(0.68 0.16 55)" stroke-width="3" />
+  <circle cx="150" cy="146" r="54" fill="oklch(0.68 0.16 55)" />
+  <path d="M150,214 C88,214 42,266 42,336 L42,400 L258,400 L258,336 C258,266 212,214 150,214 Z" fill="oklch(0.68 0.16 55)" />
+</svg>

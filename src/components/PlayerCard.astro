@@ -1,0 +1,73 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  player: CollectionEntry<"giocatori">;
+}
+const { player } = Astro.props;
+const { nome, ruolo, numero, foto } = player.data;
+const hasFoto = Boolean(foto);
+const alt = hasFoto ? `Foto di ${nome}` : `Segnaposto: foto non disponibile per ${nome}`;
+---
+<article class="player-card">
+  <div class="photo-wrap">
+    <img src={foto ?? "/img/silhouette.svg"} alt={alt} class="photo" loading="lazy" />
+    {numero !== undefined && (
+      <span class="number">
+        <span class="visually-hidden">Numero di maglia </span>{numero}
+      </span>
+    )}
+  </div>
+  <div class="info">
+    <p class="nome">{nome}</p>
+    <p class="ruolo">{ruolo}</p>
+  </div>
+</article>
+<style>
+  .player-card {
+    background: var(--surface);
+  }
+  .photo-wrap {
+    position: relative;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+  }
+  .photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .number {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    padding: 0.1rem 0.5rem;
+    font-family: var(--font-display);
+    font-size: clamp(2.25rem, 7vw, 3.5rem);
+    line-height: 1;
+    color: var(--giallo);
+    text-shadow: 0 2px 14px color-mix(in oklch, var(--bg) 85%, transparent);
+  }
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .info {
+    padding: 0.75rem 0.9rem 1rem;
+  }
+  .nome {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    font-size: 1.05rem;
+    margin: 0;
+  }
+  .ruolo {
+    color: var(--oro);
+    font-size: 0.85rem;
+    margin: 0.2rem 0 0;
+  }
+</style>
