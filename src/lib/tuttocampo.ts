@@ -34,8 +34,6 @@ export const WIDGET_URLS: Partial<Record<TipoWidget, string>> = {
   classifica: url("classifica"),
   risultati: url("risultati"),
   marcatori: url("marcatori"),
+  partita: url("partita"),
   prossimaPartita: url("prossimaPartita"),
-  // "partita" (ultima giocata) e' disponibile ma non usata: si attiva
-  // aggiungendo la riga e mettendo un <TuttocampoWidget type="partita" />
-  // dove serve.
 };

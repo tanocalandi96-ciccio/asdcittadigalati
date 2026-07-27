@@ -1,24 +1,58 @@
 ---
+// Le due partite che contano per chi apre la home: quella appena giocata e
+// quella che arriva. Affiancate su schermo largo, impilate su telefono.
 import TuttocampoWidget from "./TuttocampoWidget.astro";
 ---
-<section class="next-match" aria-labelledby="next-match-title">
+<section class="match-strip" aria-labelledby="match-strip-title">
   <div class="inner">
-    <h2 id="next-match-title" class="font-display">Prossima partita</h2>
-    <TuttocampoWidget type="prossimaPartita" title="Prossima partita - widget Tuttocampo" />
+    <h2 id="match-strip-title" class="visually-hidden">Partite</h2>
+
+    <div class="coppia">
+      <div class="riquadro">
+        <h3 class="font-display">Ultima partita</h3>
+        <TuttocampoWidget type="partita" title="Ultima partita giocata - widget Tuttocampo" />
+      </div>
+
+      <div class="riquadro">
+        <h3 class="font-display">Prossima partita</h3>
+        <TuttocampoWidget type="prossimaPartita" title="Prossima partita - widget Tuttocampo" />
+      </div>
+    </div>
   </div>
 </section>
 <style>
-  .next-match {
+  .match-strip {
     background: var(--surface);
     padding: clamp(3rem, 7vw, 5rem) clamp(1rem, 4vw, 2.5rem);
   }
   .inner {
-    max-width: 800px;
+    max-width: 1100px;
     margin: 0 auto;
-    text-align: center;
   }
-  .next-match h2 {
-    font-size: clamp(1.5rem, 3.5vw, 2.25rem);
-    margin: 0 0 1.5rem;
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .coppia {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(2rem, 5vw, 3rem);
+  }
+  /* Affiancate solo quando c'e' spazio vero: sotto i 860px due tabellini
+     stretti diventano illeggibili. */
+  @media (min-width: 860px) {
+    .coppia {
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+    }
+  }
+  .riquadro h3 {
+    font-size: clamp(1.25rem, 3vw, 1.75rem);
+    margin: 0 0 1.25rem;
+    text-align: center;
   }
 </style>
