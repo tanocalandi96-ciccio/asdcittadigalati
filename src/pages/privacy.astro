@@ -1,5 +1,10 @@
 ---
 import Base from "../layouts/Base.astro";
+import societa from "../data/societa.json";
+
+// La sezione sul titolare si completa da sola man mano che la societa'
+// inserisce i dati dal pannello: finche' mancano email e PEC resta l'avviso.
+const datiCompleti = Boolean(societa.indirizzo && societa.email && societa.pec);
 ---
 <Base title="Privacy" description="Informativa privacy e cookie del sito ASD Città di Galati">
   <main id="main" tabindex="-1">
@@ -13,20 +18,21 @@ import Base from "../layouts/Base.astro";
     <section class="policy-section">
       <div class="inner">
         <h2 class="font-display">Titolare del trattamento</h2>
-        <!-- Denominazione e codice fiscale verificati sul Registro nazionale
-             delle attività sportive dilettantistiche (Dipartimento per lo Sport).
-             MANCANO ANCORA, e senza di questi l'informativa non è completa:
-             indirizzo esatto della sede legale, email, PEC. -->
         <p>
           Il titolare del trattamento dei dati raccolti tramite questo sito è
-          l’<strong>Associazione Sportiva Dilettantistica Città di Galati</strong>,
-          con sede in Galati Mamertino (ME), codice fiscale <strong>02828410833</strong>.
+          l’<strong>{societa.denominazione}</strong>, con sede in
+          {" "}{societa.indirizzo || societa.comune}, codice fiscale
+          {" "}<strong>{societa.codiceFiscale}</strong>.
+          {societa.email && <> Email: {societa.email}.</>}
+          {societa.pec && <> PEC: {societa.pec}.</>}
         </p>
-        <p class="da-completare">
-          Indirizzo completo della sede, indirizzo email e PEC sono in corso di
-          pubblicazione: fino ad allora le richieste vanno inviate tramite il modulo
-          nella pagina <a href="/contatti">Contatti</a>.
-        </p>
+        {!datiCompleti && (
+          <p class="da-completare">
+            Indirizzo completo della sede, indirizzo email e PEC sono in corso di
+            pubblicazione: fino ad allora le richieste vanno inviate tramite il modulo
+            nella pagina <a href="/contatti">Contatti</a>.
+          </p>
+        )}
         <p>
           La società non ha nominato un Responsabile della protezione dei dati: non
           ricorre nessuno dei casi previsti dall'articolo 37 del Regolamento. Per ogni

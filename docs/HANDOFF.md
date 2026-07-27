@@ -37,17 +37,17 @@ sezioni finte o "in costruzione").
 
 ### 1.2 Come si usa `/admin`
 
-Il sito ha un pannello di gestione contenuti (Decap CMS) all'indirizzo
-`https://<dominio-del-sito>/admin` (in locale: `http://localhost:4321/admin`
-durante lo sviluppo). Serve per aggiornare notizie, rosa, staff e sponsor
-**senza toccare codice**.
+Il sito ha un pannello di gestione contenuti (Sveltia CMS) all'indirizzo
+`https://<dominio-del-sito>/admin`. Serve per aggiornare notizie, rosa, staff,
+sponsor **e i testi delle pagine** senza toccare codice.
 
-**Primo accesso**: lo sviluppatore deve invitare l'indirizzo email del
-dirigente responsabile (vedi punto 2.4). Arriva una email da Netlify Identity
-con un link "accetta l'invito": cliccandolo si imposta una password personale
-e si viene loggati direttamente nel pannello.
+> **Per chi userà il pannello c'è una guida dedicata e più semplice:
+> [GUIDA-PANNELLO.md](GUIDA-PANNELLO.md).** È scritta per il volontario, non
+> per lo sviluppatore: stampala o mandagliela.
 
-**Accessi successivi**: andare su `/admin`, inserire email e password.
+**Primo accesso**: serve un account GitHub gratuito, e lo sviluppatore deve
+invitare quel nome utente come collaboratore del repository (punto 2.1).
+Poi si entra da `/admin` con *Sign In with GitHub*.
 
 **Cosa si può gestire, e come**:
 
@@ -64,6 +64,13 @@ e si viene loggati direttamente nel pannello.
 - **Sponsor**: nome, livello (`main` = logo grande, `tecnico` = medio,
   `partner` = piccolo), logo (obbligatorio), sito web (opzionale, se presente
   il logo diventa cliccabile).
+- **Dati della società**: indirizzo, telefono, email, PEC, social, nome del
+  campo e la frase grande in home. Alimentano footer, pagina Contatti e
+  informativa privacy. I campi vuoti spariscono dal sito invece di lasciare
+  righe a metà.
+- **Pagina Club**: la storia della società (un riquadro per paragrafo) e le
+  tappe della linea del tempo. Prima erano scritte nel codice: ora la società
+  può correggere la propria storia da sola.
 
 **Voci di esempio da sostituire**: ogni collezione ha oggi una voce
 segnaposto ("Nome Cognome", "Sponsor Esempio"...) usata per collaudare il
@@ -92,65 +99,80 @@ caricamento sì.
 
 ## Parte 2 — Per lo sviluppatore
 
-### 2.1 Deploy su Netlify (prima configurazione)
+### 2.1 Deploy su Netlify e accesso al pannello
 
-Il repository oggi è locale, sul branch `feat/sito-v1`, e non ha ancora un
-remote Git configurato. Passi:
+Il repository oggi è locale, sul branch `feat/sito-v1`, senza remote.
 
-1. **Portare il codice su GitHub (o altro provider Git)**. Il CMS (Decap +
-   Git Gateway) e Netlify si aspettano un branch di produzione, per
-   convenzione `main` (già presente localmente, ma indietro di 20 commit
-   rispetto a `feat/sito-v1`): va aggiornato — tipicamente con un merge di
-   `feat/sito-v1` in `main` — prima di collegare Netlify, così Netlify e il
-   CMS costruiscono dal branch giusto fin dal primo deploy.
-   `public/admin/config.yml` ha già `backend.branch: main`: se si sceglie un
-   nome di branch di produzione diverso va allineato lì.
+**Perché GitHub è obbligatorio e non un dettaglio**: il pannello `/admin` salva
+i contenuti facendo commit sul repository. Senza repository il pannello non
+funziona e la società non è autonoma.
 
-2. **Creare il sito su Netlify**: dashboard Netlify → "Add new site" →
-   "Import an existing project" → collegare il provider Git e selezionare
-   questo repository.
+#### Passi
 
-3. **Build settings**: Netlify legge automaticamente `netlify.toml` alla
-   radice del repo (già presente in questa consegna):
+1. **Creare il repository su GitHub.** Può essere privato: il sito pubblicato
+   resta pubblico comunque, il codice no. Poi in locale:
+   ```bash
+   git remote add origin https://github.com/UTENTE/REPOSITORY.git
+   git checkout main && git merge feat/sito-v1
+   git push -u origin main
+   ```
+
+2. **Scrivere il nome del repository nel pannello.** In
+   `public/admin/config.yml`, sostituire il segnaposto:
+   ```yaml
+   backend:
+     name: github
+     repo: UTENTE/REPOSITORY   # <- qui
+     branch: main
+   ```
+   Senza questo il pannello mostra la schermata di accesso ma non trova nulla.
+
+3. **Autorizzare l'accesso a GitHub.** Sveltia CMS ha bisogno di un
+   intermediario che gestisca il login OAuth. Due strade:
+   - **Semplice**: ogni redattore entra con *Sign In with GitHub Using Token*,
+     incollando un token personale creato su GitHub (Settings → Developer
+     settings → Personal access tokens → Fine-grained, accesso al solo
+     repository del sito). Nessun servizio da installare.
+   - **Più comoda per chi la usa**: pubblicare `sveltia-cms-auth`, un piccolo
+     servizio gratuito su Cloudflare Workers, che abilita il pulsante
+     *Sign In with GitHub* senza token. Mezz'ora di configurazione una tantum.
+
+   Con una sola persona a gestire i contenuti, la prima strada basta.
+
+4. **Invitare il redattore.** Sul repository GitHub: Settings → Collaborators
+   → Add people. Serve il suo nome utente GitHub. Deve accettare l'invito che
+   riceve via email.
+
+5. **Creare il sito su Netlify**: "Add new site" → "Import an existing
+   project" → selezionare il repository.
+
+6. **Build settings**: Netlify legge `netlify.toml` (già presente):
    ```toml
    [build]
      command = "npm run build"
      publish = "dist"
    ```
-   `dist` è la cartella di output reale di Astro (verificato con
-   `npm run build`): non va modificata a meno di cambiare `outDir` in
-   `astro.config.mjs`.
 
-4. **Versione di Node**: `package.json` richiede `"engines": { "node":
-   ">=22.12.0" }`. Netlify potrebbe usare di default una versione di Node
-   diversa: prima del primo deploy, su Site settings → Environment variables,
-   aggiungere `NODE_VERSION` = `22` (o superiore), altrimenti la build
-   potrebbe fallire o usare una versione non testata.
+7. **Versione di Node**: `package.json` richiede Node >= 22.12. Su Site
+   settings → Environment variables aggiungere `NODE_VERSION` = `22`,
+   altrimenti la build può fallire.
 
-5. **Netlify Identity** (serve per far accedere la società a `/admin`):
-   Site settings → Identity → "Enable Identity". In "Registration", impostare
-   **"Invite only"** (nessuno deve potersi registrare da solo su un sito di
-   una società sportiva).
+8. **Consegnare la guida**: `docs/GUIDA-PANNELLO.md` è scritta per il
+   volontario, non per chi sviluppa. Stampala o mandagliela.
 
-6. **Git Gateway** (permette a Decap CMS di scrivere sul repo senza che la
-   società abbia un account GitHub proprio): Site settings → Identity →
-   Services → "Enable Git Gateway".
+#### Perché non Netlify Identity
 
-7. **Invitare l'utente dirigente**: Site settings → Identity → "Invite
-   users" → inserire l'email della persona che gestirà `/admin` lato società.
-   Riceverà l'email di invito descritta al punto 1.2.
+La versione precedente del pannello usava Decap CMS con Netlify Identity e Git
+Gateway. **Netlify li ha deprecati**: non corregge più i bug di Git Gateway e
+ne sconsiglia l'uso sui siti nuovi. Il pannello è stato quindi portato su
+Sveltia CMS, che riusa la stessa configurazione ma parla direttamente con
+GitHub.
 
-8. **Netlify Forms**: non serve configurazione aggiuntiva. Il form in
-   `/contatti` ha già gli attributi richiesti (`data-netlify="true"`, campo
-   honeypot `bot-field`); Netlify lo rileva automaticamente analizzando
-   l'HTML generato al primo deploy. Dopo il deploy, verificare in Site
-   settings → Forms che il form "contatti" sia comparso, e fare un invio di
-   prova.
-
-9. **Verifiche post-deploy che richiedono Netlify reale** (non testabili in
-   locale): invio effettivo del form di contatto, flusso di invito/login
-   Identity, scrittura dal CMS via Git Gateway. Vanno controllati una volta
-   che il sito è online.
+**Limite noto**: l'interfaccia di Sveltia è in inglese (o giapponese),
+l'italiano non è ancora supportato. I nomi delle sezioni e delle voci sono
+comunque in italiano, perché li abbiamo scritti noi nella configurazione: in
+inglese restano solo i pulsanti *Save*, *Publish*, *Delete*, spiegati nella
+guida.
 
 ### 2.2 Dominio e `site` in `astro.config.mjs`
 

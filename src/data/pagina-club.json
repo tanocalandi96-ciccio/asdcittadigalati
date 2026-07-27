@@ -1,0 +1,39 @@
+{
+  "storia": [
+    "A Galati Mamertino il pallone rotola dagli anni Sessanta, ma per un lungo periodo il paese ha corso il rischio di restare senza una squadra. Le due società del comune, la Mamertina e il San Basilio, quella della contrada dai colori giallo-blu, portavano avanti due storie parallele in un territorio che, da solo, non poteva reggerne due.",
+    "Nel luglio 2017 la scelta che cambia tutto: le due società si fondono e nasce l'ASD Città di Galati. Non un azzeramento, ma una somma: storia, tradizione, forze economiche ed energie giovanili di entrambe, per impedire che il calcio sparisse dal paese. Il nome della Mamertina continua a vivere dentro il progetto.",
+    "Da lì la crescita: due secondi posti in Prima Categoria, poi due campionati di Promozione. Nel 2020 il campo Ducezio-Nello Parafioriti viene rinnovato con il manto sintetico e diventa una casa vera per le domeniche del paese. Oggi la società riparte dalla Prima Categoria con lo stesso obiettivo dichiarato dall'inizio: essere un punto di riferimento sportivo e umano per Galati Mamertino."
+  ],
+  "tappe": [
+    {
+      "anno": "Anni '60",
+      "titolo": "Le radici",
+      "testo": "Il calcio a Galati Mamertino affonda le radici negli anni Sessanta, con le prime formazioni di paese e una tradizione che passa di generazione in generazione."
+    },
+    {
+      "anno": "2017",
+      "titolo": "Nasce l'ASD Città di Galati",
+      "testo": "A luglio un gruppo di amici e appassionati dà vita alla nuova società, dalla fusione di Mamertina e San Basilio, le due realtà che avevano dato lustro al calcio galatese. Il nome Mamertina continua a vivere dentro il progetto."
+    },
+    {
+      "anno": "2020",
+      "titolo": "Il Ducezio in erba sintetica",
+      "testo": "Il campo sportivo Ducezio-Nello Parafioriti viene rinnovato con il manto in erba sintetica: una casa vera per le domeniche del paese."
+    },
+    {
+      "anno": "2018-2024",
+      "titolo": "La scalata",
+      "testo": "Due secondi posti in Prima Categoria e due campionati di Promozione disputati con risultati lusinghieri: in pochi anni la società si costruisce una collocazione stabile nel calcio dei Nebrodi."
+    },
+    {
+      "anno": "2025-26",
+      "titolo": "Salvezza in Promozione",
+      "testo": "La squadra chiude il campionato di Promozione, girone B, centrando la permanenza dopo una stagione combattuta."
+    },
+    {
+      "anno": "2026-27",
+      "titolo": "Prima Categoria, girone D",
+      "testo": "La società riparte dalla Prima Categoria con una rosa rinnovata e l'obiettivo di restare il punto di riferimento sportivo di Galati Mamertino."
+    }
+  ]
+}

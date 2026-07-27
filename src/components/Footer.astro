@@ -1,34 +1,35 @@
 ---
+// I dati societari arrivano da src/data/societa.json, modificabile dal
+// pannello: la societa' puo' correggerli da sola. I campi vuoti spariscono
+// invece di lasciare righe a meta'.
+import societa from "../data/societa.json";
 const year = new Date().getFullYear();
 ---
 <footer class="site-footer">
   <div class="footer-grid">
     <div class="footer-club">
-      <p class="font-display club-name">ASD Città di Galati</p>
-      <p>Galati Mamertino (ME), Sicilia</p>
-      <p>Campo sportivo &quot;Ducezio-Parafioriti&quot;</p>
+      <p class="font-display club-name">{societa.denominazioneBreve}</p>
+      <p>{societa.comune}</p>
+      <p>Campo sportivo &quot;{societa.campoNome}&quot;</p>
       <p>Prima Categoria Sicilia 2026-27</p>
     </div>
     <div class="footer-social">
       <p class="footer-heading">Seguici</p>
       <ul>
-        <li><a href="https://www.instagram.com/cittadigalati/" target="_blank" rel="noopener noreferrer">Instagram</a></li>
-        <li><a href="https://www.facebook.com/c1ttad1galat1/" target="_blank" rel="noopener noreferrer">Facebook</a></li>
+        {societa.instagram && <li><a href={societa.instagram} target="_blank" rel="noopener noreferrer">Instagram</a></li>}
+        {societa.facebook && <li><a href={societa.facebook} target="_blank" rel="noopener noreferrer">Facebook</a></li>}
       </ul>
     </div>
     <div class="footer-legal">
       <p class="footer-heading">Dati societari</p>
-      <!-- Denominazione e codice fiscale verificati sul Registro nazionale delle
-           attività sportive dilettantistiche (Dipartimento per lo Sport).
-           Restano da confermare dalla società: indirizzo esatto della sede,
-           telefono, email, PEC. Vedi docs/RICHIESTE-SOCIETA.md -->
-      <p>A.S.D. Città di Galati &middot; Galati Mamertino (ME)</p>
-      <p>C.F. 02828410833 &middot; matricola FIGC 916584</p>
+      <p>{societa.denominazioneBreve} &middot; {societa.indirizzo || societa.comune}</p>
+      <p>C.F. {societa.codiceFiscale}{societa.matricolaFigc && ` · matricola FIGC ${societa.matricolaFigc}`}</p>
+      {societa.email && <p><a href={`mailto:${societa.email}`}>{societa.email}</a></p>}
       <p><a href="/privacy">Privacy</a></p>
     </div>
   </div>
   <p class="footer-copy">
-    &copy; {year} ASD Città di Galati
+    &copy; {year} {societa.denominazioneBreve}
     <span class="firma">
       Powered by{" "}
       <a href="https://elevadigital.it" target="_blank" rel="noopener">Eleva Digital</a>

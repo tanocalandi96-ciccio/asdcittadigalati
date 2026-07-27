@@ -1,10 +1,18 @@
+# Accesso con account GitHub. Netlify Identity e Git Gateway sono deprecati
+# (Netlify non ne corregge piu' i bug e ne sconsiglia l'uso sui siti nuovi),
+# quindi il pannello parla direttamente con GitHub: chi gestisce i contenuti
+# entra col proprio account GitHub e deve essere invitato come collaboratore
+# del repository.
+#
+# DA COMPILARE alla creazione del repository: sostituire UTENTE/REPOSITORY.
 backend:
-  name: git-gateway
+  name: github
+  repo: UTENTE/REPOSITORY
   branch: main
 
-# Backend locale per test in sviluppo: decommentare insieme a `npx decap-server`
-# per scrivere le modifiche direttamente sul filesystem senza Netlify Identity.
-# Deve restare commentato/rimosso in produzione.
+# Backend locale per le prove in sviluppo: decommentare e lanciare
+# `npx @sveltia/cms-proxy-server` per scrivere sul disco senza passare da
+# GitHub. Deve restare commentato in produzione.
 # local_backend: true
 
 media_folder: "public/img/uploads"
@@ -75,3 +83,48 @@ collections:
         widget: "string"
         required: false
         pattern: ["^https?://\\S+$", "Deve essere un URL valido (es. https://esempio.it)"]
+
+  # ------------------------------------------------------------------
+  # Testi delle pagine: prima erano scritti nel codice e per cambiarli
+  # serviva uno sviluppatore. Ora la societa' li modifica da sola.
+  # ------------------------------------------------------------------
+  - name: "impostazioni"
+    label: "Dati della società"
+    files:
+      - name: "societa"
+        label: "Dati e recapiti"
+        file: "src/data/societa.json"
+        description: "Compaiono nel footer, nella pagina Contatti e nell'informativa privacy. I campi lasciati vuoti non vengono mostrati."
+        fields:
+          - { label: "Denominazione completa", name: "denominazione", widget: "string", hint: "Come da statuto. Compare nell'informativa privacy." }
+          - { label: "Nome breve", name: "denominazioneBreve", widget: "string", hint: "Quello che si legge nel footer." }
+          - { label: "Codice fiscale", name: "codiceFiscale", widget: "string" }
+          - { label: "Matricola FIGC", name: "matricolaFigc", widget: "string", required: false }
+          - { label: "Comune", name: "comune", widget: "string" }
+          - { label: "Indirizzo della sede", name: "indirizzo", widget: "string", required: false, hint: "Via e numero civico. Obbligatorio per una privacy policy valida." }
+          - { label: "Telefono", name: "telefono", widget: "string", required: false }
+          - { label: "Email", name: "email", widget: "string", required: false }
+          - { label: "PEC", name: "pec", widget: "string", required: false }
+          - { label: "Nome del campo", name: "campoNome", widget: "string" }
+          - { label: "Indirizzo del campo", name: "campoIndirizzo", widget: "string" }
+          - { label: "Instagram", name: "instagram", widget: "string", required: false }
+          - { label: "Facebook", name: "facebook", widget: "string", required: false }
+          - { label: "Frase in home", name: "claimHome", widget: "text", hint: "La frase grande sopra la foto del pubblico. Andando a capo si va a capo anche sul sito." }
+
+      - name: "pagina-club"
+        label: "Pagina Club"
+        file: "src/data/pagina-club.json"
+        description: "La storia della società e le tappe della linea del tempo."
+        fields:
+          - label: "Storia"
+            name: "storia"
+            widget: "list"
+            field: { label: "Paragrafo", name: "paragrafo", widget: "text" }
+            hint: "Un elemento per ogni paragrafo."
+          - label: "Tappe della linea del tempo"
+            name: "tappe"
+            widget: "list"
+            fields:
+              - { label: "Anno", name: "anno", widget: "string", hint: "Anche un periodo, es. 2018-2024." }
+              - { label: "Titolo", name: "titolo", widget: "string" }
+              - { label: "Testo", name: "testo", widget: "text" }

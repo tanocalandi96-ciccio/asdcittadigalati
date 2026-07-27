@@ -6,10 +6,14 @@ import NewsCard from "../components/NewsCard.astro";
 import NextMatch from "../components/NextMatch.astro";
 import SponsorStrip from "../components/SponsorStrip.astro";
 import KineticRibbon from "../components/KineticRibbon.astro";
+import societa from "../data/societa.json";
 
 const news = (await getCollection("news"))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, 3);
+
+// Il claim si scrive dal pannello su piu' righe: ogni riga diventa un a capo.
+const righeClaim = societa.claimHome.split(/\r?\n/).filter(Boolean);
 ---
 <Base title="Home">
   <main id="main" tabindex="-1">
@@ -37,7 +41,11 @@ const news = (await getCollection("news"))
         loading="lazy"
       />
       <div class="paese-testo">
-        <p id="paese-claim" class="font-display">Novanta minuti<br />in cui il paese si ferma</p>
+        <p id="paese-claim" class="font-display">
+          {righeClaim.map((riga, i) => (
+            <>{i > 0 && <br />}{riga}</>
+          ))}
+        </p>
       </div>
     </section>
 

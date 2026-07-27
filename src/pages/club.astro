@@ -2,49 +2,10 @@
 import Base from "../layouts/Base.astro";
 import Timeline from "../components/Timeline.astro";
 import EmbedConsenso from "../components/EmbedConsenso.astro";
-
-// Tappe ricostruite da fonti pubbliche (stampa locale, Tuttocampo, Registro
-// nazionale ASD). NON sono piu' inventate, ma vanno comunque CONFERMATE dalla
-// societa', che sola conosce date e dettagli esatti: le fonti giornalistiche
-// possono sbagliare e mancano gli anni fra il 2017 e il 2025.
-const tappe = [
-  {
-    anno: "Anni '60",
-    titolo: "Le radici",
-    testo:
-      "Il calcio a Galati Mamertino affonda le radici negli anni Sessanta, con le prime formazioni di paese e una tradizione che passa di generazione in generazione.",
-  },
-  {
-    anno: "2017",
-    titolo: "Nasce l'ASD Città di Galati",
-    testo:
-      "A luglio un gruppo di amici e appassionati dà vita alla nuova società, dalla fusione di Mamertina e San Basilio, le due realtà che avevano dato lustro al calcio galatese. Il nome Mamertina continua a vivere dentro il progetto.",
-  },
-  {
-    anno: "2020",
-    titolo: "Il Ducezio in erba sintetica",
-    testo:
-      "Il campo sportivo Ducezio-Nello Parafioriti viene rinnovato con il manto in erba sintetica: una casa vera per le domeniche del paese.",
-  },
-  {
-    anno: "2018-2024",
-    titolo: "La scalata",
-    testo:
-      "Due secondi posti in Prima Categoria e due campionati di Promozione disputati con risultati lusinghieri: in pochi anni la società si costruisce una collocazione stabile nel calcio dei Nebrodi.",
-  },
-  {
-    anno: "2025-26",
-    titolo: "Salvezza in Promozione",
-    testo:
-      "La squadra chiude il campionato di Promozione, girone B, centrando la permanenza dopo una stagione combattuta.",
-  },
-  {
-    anno: "2026-27",
-    titolo: "Prima Categoria, girone D",
-    testo:
-      "La società riparte dalla Prima Categoria con una rosa rinnovata e l'obiettivo di restare il punto di riferimento sportivo di Galati Mamertino.",
-  },
-];
+// Storia e tappe arrivano da src/data/pagina-club.json, modificabile dal
+// pannello: la societa' puo' correggere la propria storia senza sviluppatore.
+import paginaClub from "../data/pagina-club.json";
+import societa from "../data/societa.json";
 
 // Coordinate del comune di Galati Mamertino (ME), verificate su Nominatim/OpenStreetMap
 // (query "Galati Mamertino" -> lat 38.0315592, lon 14.7725171). Le coordinate esatte del
@@ -60,31 +21,7 @@ const googleMapsUrl = "https://www.google.com/maps/search/?api=1&query=Campo+spo
     <section class="storia">
       <div class="inner">
         <h1 class="font-display">Il Club</h1>
-        <!-- Testo ricostruito da fonti pubbliche (stampa locale, Wikipedia,
-             Registro nazionale ASD). DA FAR CONFERMARE alla società prima di
-             andare online: nomi, date e sfumature le conoscono solo loro. -->
-        <p>
-          A Galati Mamertino il pallone rotola dagli anni Sessanta, ma per un lungo periodo
-          il paese ha corso il rischio di restare senza una squadra. Le due società del
-          comune, la <strong>Mamertina</strong> e il <strong>San Basilio</strong>, quella
-          della contrada dai colori giallo-blu, portavano avanti due storie parallele in un
-          territorio che, da solo, non poteva reggerne due.
-        </p>
-        <p>
-          Nel <strong>luglio 2017</strong> la scelta che cambia tutto: le due società si
-          fondono e nasce l'<strong>ASD Città di Galati</strong>. Non un azzeramento, ma una
-          somma: storia, tradizione, forze economiche ed energie giovanili di entrambe, per
-          impedire che il calcio sparisse dal paese. Il nome della Mamertina continua a
-          vivere dentro il progetto.
-        </p>
-        <p>
-          Da lì la crescita: due secondi posti in Prima Categoria, poi due campionati di
-          Promozione. Nel 2020 il campo <strong>Ducezio-Nello Parafioriti</strong> viene
-          rinnovato con il manto sintetico e diventa una casa vera per le domeniche del
-          paese. Oggi la società riparte dalla Prima Categoria con lo stesso obiettivo
-          dichiarato dall'inizio: essere un punto di riferimento sportivo e umano per
-          Galati Mamertino.
-        </p>
+        {paginaClub.storia.map((par) => <p>{par}</p>)}
       </div>
       <!-- FOTO FITTIZIA generata: sostituire con una foto d'archivio vera della societa' -->
       <figure class="storica">
@@ -99,8 +36,7 @@ const googleMapsUrl = "https://www.google.com/maps/search/?api=1&query=Campo+spo
       </figure>
     </section>
 
-    <!-- TAPPE FITTIZIE: vedi commento nel frontmatter -->
-    <Timeline tappe={tappe} />
+    <Timeline tappe={paginaClub.tappe} />
 
     <section class="campo">
       <!-- FOTO FITTIZIA generata: sostituire con una foto vera del Ducezio-Parafioriti -->
@@ -114,8 +50,8 @@ const googleMapsUrl = "https://www.google.com/maps/search/?api=1&query=Campo+spo
       />
       <div class="inner">
         <h2 class="font-display">Il campo</h2>
-        <p class="campo-nome">Ducezio-Parafioriti</p>
-        <p class="campo-indirizzo">Galati Mamertino (ME), Sicilia</p>
+        <p class="campo-nome">{societa.campoNome}</p>
+        <p class="campo-indirizzo">{societa.campoIndirizzo}</p>
         <div class="map-wrap">
           <EmbedConsenso
             src={osmEmbedUrl}

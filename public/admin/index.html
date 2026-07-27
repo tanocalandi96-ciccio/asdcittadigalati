@@ -5,23 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex" />
   <title>Gestione contenuti - Città di Galati</title>
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 <body>
-  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
-  <script>
-    // Senza questo redirect, chi accetta l'invito via email e imposta la
-    // password atterra sulla home del sito invece che loggato in /admin
-    // (bug noto di Netlify Identity + Decap CMS). Vedi docs/HANDOFF.md.
-    if (window.netlifyIdentity) {
-      window.netlifyIdentity.on("init", (user) => {
-        if (!user) {
-          window.netlifyIdentity.on("login", () => {
-            document.location.href = "/admin/";
-          });
-        }
-      });
-    }
-  </script>
+  <!--
+    Pannello di gestione contenuti (Sveltia CMS).
+
+    Perche' Sveltia e non Decap: Decap si appoggiava a Netlify Identity e Git
+    Gateway, che Netlify ha deprecato, non corregge piu' e sconsiglia sui siti
+    nuovi. Sveltia riusa la stessa configurazione (public/admin/config.yml) ma
+    parla direttamente con GitHub, quindi non dipende da un pezzo abbandonato.
+
+    Chi gestisce i contenuti entra con il proprio account GitHub e deve essere
+    invitato come collaboratore del repository. Istruzioni in docs/HANDOFF.md.
+  -->
+  <script src="https://unpkg.com/@sveltia/cms@0.129.0/dist/sveltia-cms.js" type="module"></script>
 </body>
 </html>
