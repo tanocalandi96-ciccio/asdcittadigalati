@@ -2,7 +2,7 @@
 // Estrae le sequenze di frame WebP per l'hero scroll-driven (Task 4) dai due
 // video sorgente (desktop 16:9 e mobile 9:16), rispettando il budget di peso.
 import { execSync } from "node:child_process";
-import { existsSync, mkdirSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 // La coda del video sorgente viene scartata: dal fotogramma ~99 (4,08s) in poi
@@ -16,9 +16,12 @@ const USE_SECONDS = 4.08;
 // buttare meta' dei pixel e poi farli reingrandire dal canvas (fattore ~1,9 su
 // uno schermo desktop pieno, da cui l'immagine molle). Si estrae alla
 // risoluzione nativa. Sul mobile 900px coprono anche i telefoni a dPR 3.
+// Solo desktop: la sequenza mobile la costruisce scripts/build-mobile-hero.py,
+// perche' il video 9:16 e' un reframe generato dall'AI e ha bisogno di una
+// correzione (congelamento dello sfondo dopo il gradino) che qui non si puo'
+// fare. `npm run frames` lancia entrambi.
 const jobs = [
   { key: "desktop", src: "assets/hero-video-master-16x9.mp4", out: "public/hero-frames/desktop", frames: 70, scale: "1920:-2" },
-  { key: "mobile", src: "assets/hero-video-mobile-9x16.mp4", out: "public/hero-frames/mobile", frames: 40, scale: "900:-2" },
 ];
 
 // Budget di peso per set (KB). Il mobile resta stretto: e' quello che pesa sul
@@ -28,7 +31,11 @@ const BUDGET_KB = { desktop: 8500, mobile: 2800 };
 // Tentativi di qualità WebP in ordine decrescente: si ferma al primo che rientra nel budget.
 const QUALITY_ATTEMPTS = [72, 65, 58, 50];
 
-const manifest = {};
+// Si riparte dal manifest esistente: la voce "mobile" la scrive
+// scripts/build-mobile-hero.py e non va persa.
+const manifest = existsSync("public/hero-frames/manifest.json")
+  ? JSON.parse(readFileSync("public/hero-frames/manifest.json", "utf8"))
+  : {};
 
 for (const { key, src, out, frames, scale } of jobs) {
   if (existsSync(out)) rmSync(out, { recursive: true, force: true });

@@ -3,6 +3,7 @@ import { getCollection } from "astro:content";
 import Base from "../layouts/Base.astro";
 import PlayerCard from "../components/PlayerCard.astro";
 import PlayerWall from "../components/PlayerWall.astro";
+import PlayerDialog from "../components/PlayerDialog.astro";
 
 const ROLE_ORDER = ["Portiere", "Difensore", "Centrocampista", "Attaccante"] as const;
 const ROLE_LABELS: Record<(typeof ROLE_ORDER)[number], string> = {
@@ -90,6 +91,7 @@ const rosaOrdinata = [...giocatori].sort(
         </div>
       </section>
     )}
+    <PlayerDialog />
   </main>
 </Base>
 <style>

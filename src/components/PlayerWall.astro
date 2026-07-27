@@ -22,12 +22,23 @@ const { players } = Astro.props;
   <ul class="wall" data-wall>
     {players.map((g) => (
       <li class="wall-card">
+        <button
+          type="button"
+          class="wall-btn"
+          data-player
+          data-nome={g.data.nome}
+          data-ruolo={g.data.ruolo}
+          data-numero={g.data.numero ?? ""}
+          data-foto={g.data.foto ?? ""}
+          aria-label={`Apri la scheda di ${g.data.nome}`}
+        >
         <img src={g.data.foto || "/img/silhouette.svg"} alt={g.data.foto ? `Ritratto di ${g.data.nome}` : `Segnaposto: foto non disponibile per ${g.data.nome}`} loading="lazy" />
         <div class="card-info">
           {g.data.numero != null && <span class="num font-display" aria-hidden="true">{g.data.numero}</span>}
           <p class="nome font-display">{g.data.nome}</p>
           <p class="ruolo">{g.data.ruolo}{g.data.numero != null && <span class="sr-only"> numero {g.data.numero}</span>}</p>
         </div>
+        </button>
       </li>
     ))}
   </ul>
@@ -98,6 +109,18 @@ const { players } = Astro.props;
     overflow: hidden;
     transform-style: preserve-3d;
     will-change: transform;
+  }
+  .wall-btn {
+    display: block;
+    width: 100%;
+    border: none;
+    padding: 0;
+    margin: 0;
+    background: none;
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
   }
   .wall-card img {
     width: 100%;

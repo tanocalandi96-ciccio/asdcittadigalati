@@ -9,7 +9,16 @@ const { nome, ruolo, numero, foto } = player.data;
 const hasFoto = Boolean(foto);
 const alt = hasFoto ? `Foto di ${nome}` : `Segnaposto: foto non disponibile per ${nome}`;
 ---
-<article class="player-card">
+<button
+  type="button"
+  class="player-card"
+  data-player
+  data-nome={nome}
+  data-ruolo={ruolo}
+  data-numero={numero ?? ""}
+  data-foto={foto ?? ""}
+  aria-label={`Apri la scheda di ${nome}`}
+>
   <div class="photo-wrap">
     <img src={foto || "/img/silhouette.svg"} alt={alt} class="photo" loading="lazy" />
     {numero !== undefined && (
@@ -22,12 +31,30 @@ const alt = hasFoto ? `Foto di ${nome}` : `Segnaposto: foto non disponibile per 
     <p class="nome">{nome}</p>
     <p class="ruolo">{ruolo}</p>
   </div>
-</article>
+</button>
 <style>
   .player-card {
     display: flex;
     flex-direction: column;
     background: var(--surface);
+    /* e' un <button> per accessibilita' (tastiera, ruolo), ma non deve
+       sembrarlo: niente bordo, niente sfondo di sistema. */
+    border: none;
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+    width: 100%;
+    transition: transform 0.25s var(--ease-out-quart);
+  }
+  .player-card:hover,
+  .player-card:focus-visible {
+    transform: translateY(-3px);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .player-card { transition: none; }
   }
   .photo-wrap {
     position: relative;

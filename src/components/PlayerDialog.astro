@@ -1,0 +1,189 @@
+---
+// Finestra con la scheda del giocatore. Un solo <dialog> per pagina, riempito
+// al volo dai dati della card cliccata: 22 finestre nel documento sarebbero
+// peso morto.
+//
+// Si usa l'elemento nativo <dialog> invece di un finto pannello: chiusura con
+// Esc, fuoco intrappolato dentro la finestra e restituito al punto di partenza
+// sono comportamenti che il browser fa da solo e meglio.
+---
+<dialog class="player-dialog" data-player-dialog aria-labelledby="pd-nome">
+  <div class="pd-inner">
+    <button type="button" class="pd-chiudi" data-pd-close aria-label="Chiudi la scheda">&times;</button>
+
+    <div class="pd-foto-wrap">
+      <img data-pd-foto src="" alt="" class="pd-foto" />
+      <span class="pd-numero font-display" data-pd-numero hidden></span>
+    </div>
+
+    <div class="pd-testo">
+      <p class="pd-ruolo" data-pd-ruolo></p>
+      <h2 id="pd-nome" class="font-display" data-pd-nome></h2>
+      <dl class="pd-dati">
+        <div><dt>Ruolo</dt><dd data-pd-ruolo2></dd></div>
+        <div><dt>Numero</dt><dd data-pd-numero2></dd></div>
+      </dl>
+      <p class="pd-nota">
+        Altezza, età e statistiche compariranno qui quando la società fornirà i
+        dati completi.
+      </p>
+    </div>
+  </div>
+</dialog>
+
+<style>
+  .player-dialog {
+    border: 1px solid var(--oro);
+    background: var(--surface);
+    color: var(--text);
+    padding: 0;
+    max-width: min(640px, 92vw);
+    width: 100%;
+    /* stato di partenza dell'animazione */
+    opacity: 0;
+    transform: scale(0.94) translateY(12px);
+    transition:
+      opacity 0.28s var(--ease-out-quart),
+      transform 0.28s var(--ease-out-quart),
+      overlay 0.28s allow-discrete,
+      display 0.28s allow-discrete;
+  }
+  .player-dialog[open] {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  /* @starting-style serve perche' l'elemento passa da display:none a visibile:
+     senza, il browser non ha uno stato iniziale da cui animare. */
+  @starting-style {
+    .player-dialog[open] {
+      opacity: 0;
+      transform: scale(0.94) translateY(12px);
+    }
+  }
+  .player-dialog::backdrop {
+    background: color-mix(in oklch, oklch(0.12 0.04 265) 78%, transparent);
+    opacity: 0;
+    transition: opacity 0.28s var(--ease-out-quart), overlay 0.28s allow-discrete, display 0.28s allow-discrete;
+  }
+  .player-dialog[open]::backdrop { opacity: 1; }
+  @starting-style {
+    .player-dialog[open]::backdrop { opacity: 0; }
+  }
+
+  .pd-inner {
+    display: grid;
+    grid-template-columns: 1fr;
+    position: relative;
+  }
+  @media (min-width: 560px) {
+    .pd-inner { grid-template-columns: 240px 1fr; }
+  }
+
+  .pd-chiudi {
+    position: absolute;
+    top: 0.4rem;
+    right: 0.5rem;
+    z-index: 2;
+    background: color-mix(in oklch, var(--bg) 70%, transparent);
+    color: var(--text);
+    border: 1px solid color-mix(in oklch, var(--oro) 55%, transparent);
+    width: 2.2rem;
+    height: 2.2rem;
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .pd-chiudi:hover,
+  .pd-chiudi:focus-visible { background: var(--giallo); color: var(--bg); }
+
+  .pd-foto-wrap { position: relative; background: color-mix(in oklch, var(--bg) 70%, var(--surface)); }
+  .pd-foto { width: 100%; height: 100%; aspect-ratio: 3 / 4; object-fit: cover; display: block; }
+  .pd-numero {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    padding: 0.05rem 0.6rem;
+    background: var(--bg);
+    color: var(--giallo);
+    font-size: clamp(2.4rem, 8vw, 3.4rem);
+    line-height: 1;
+  }
+
+  .pd-testo { padding: clamp(1.1rem, 3vw, 1.75rem); }
+  .pd-ruolo {
+    color: var(--oro);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.75rem;
+    margin: 0 0 0.35rem;
+  }
+  .pd-testo h2 { font-size: clamp(1.4rem, 4vw, 2rem); margin: 0 0 1rem; }
+  .pd-dati { margin: 0 0 1.25rem; display: grid; gap: 0.5rem; }
+  .pd-dati > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    border-bottom: 1px solid color-mix(in oklch, var(--oro) 25%, transparent);
+    padding-bottom: 0.4rem;
+  }
+  .pd-dati dt { color: color-mix(in oklch, var(--text) 70%, transparent); font-size: 0.85rem; }
+  .pd-dati dd { margin: 0; font-family: var(--font-display); }
+  .pd-nota {
+    margin: 0;
+    font-size: 0.8rem;
+    color: color-mix(in oklch, var(--text) 62%, transparent);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .player-dialog, .player-dialog::backdrop { transition: none; }
+  }
+</style>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>("[data-player-dialog]");
+  if (dialog) {
+    const q = <T extends Element>(sel: string) => dialog.querySelector<T>(sel);
+    const foto = q<HTMLImageElement>("[data-pd-foto]");
+    const numero = q<HTMLElement>("[data-pd-numero]");
+    const numero2 = q<HTMLElement>("[data-pd-numero2]");
+    const nome = q<HTMLElement>("[data-pd-nome]");
+    const ruolo = q<HTMLElement>("[data-pd-ruolo]");
+    const ruolo2 = q<HTMLElement>("[data-pd-ruolo2]");
+
+    const apri = (t: HTMLElement) => {
+      const d = t.dataset;
+      if (nome) nome.textContent = d.nome ?? "";
+      if (ruolo) ruolo.textContent = d.ruolo ?? "";
+      if (ruolo2) ruolo2.textContent = d.ruolo ?? "-";
+      if (numero2) numero2.textContent = d.numero || "-";
+      if (numero) {
+        numero.textContent = d.numero ?? "";
+        numero.hidden = !d.numero;
+      }
+      if (foto) {
+        foto.src = d.foto || "/img/silhouette.svg";
+        foto.alt = d.foto
+          ? `Foto di ${d.nome}`
+          : `Segnaposto: foto non disponibile per ${d.nome}`;
+      }
+      dialog.showModal();
+    };
+
+    // Delegato: vale anche per le card della parete curva e per quelle che
+    // dovessero comparire in futuro.
+    document.addEventListener("click", (e) => {
+      const t = (e.target as Element)?.closest<HTMLElement>("[data-player]");
+      if (t) apri(t);
+    });
+
+    q<HTMLButtonElement>("[data-pd-close]")?.addEventListener("click", () => dialog.close());
+    // Clic sullo sfondo scuro: il <dialog> lo registra su se stesso, quindi si
+    // controlla che il punto cliccato sia fuori dal riquadro.
+    dialog.addEventListener("click", (e) => {
+      const r = dialog.getBoundingClientRect();
+      const fuori =
+        e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+      if (fuori) dialog.close();
+    });
+  }
+</script>
