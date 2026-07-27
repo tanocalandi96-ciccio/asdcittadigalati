@@ -10,46 +10,79 @@ const sponsors = (await getCollection("sponsor")).sort(
   <section class="sponsor-strip" aria-labelledby="sponsor-title">
     <div class="inner">
       <h2 id="sponsor-title" class="font-display">I nostri sponsor</h2>
-      <ul class="logos">
-        {sponsors.map((sponsor) => (
-          <li class:list={["logo-item", sponsor.data.livello]}>
-            {sponsor.data.url ? (
-              <a href={sponsor.data.url} target="_blank" rel="noopener noreferrer" class="logo-link">
-                <img src={sponsor.data.logo} alt={`Logo ${sponsor.data.nome}`} class="logo-img" />
-              </a>
-            ) : (
-              <img src={sponsor.data.logo} alt={`Logo ${sponsor.data.nome}`} class="logo-img" />
-            )}
-          </li>
-        ))}
-      </ul>
+    </div>
+    {/* Nastro scorrevole: la lista è duplicata (copia aria-hidden) per chiudere
+        il giro senza vuoti. Si ferma su hover/focus e con reduced-motion. */}
+    <div class="marquee" role="region" aria-label="Loghi degli sponsor">
+      <div class="marquee-track">
+        <ul class="logos">
+          {sponsors.map((sponsor) => (
+            <li class:list={["logo-item", sponsor.data.livello]}>
+              {sponsor.data.url ? (
+                <a href={sponsor.data.url} target="_blank" rel="noopener noreferrer" class="logo-link">
+                  <img src={sponsor.data.logo} alt={`Logo ${sponsor.data.nome}`} class="logo-img" loading="lazy" />
+                </a>
+              ) : (
+                <img src={sponsor.data.logo} alt={`Logo ${sponsor.data.nome}`} class="logo-img" loading="lazy" />
+              )}
+            </li>
+          ))}
+        </ul>
+        <ul class="logos" aria-hidden="true">
+          {sponsors.map((sponsor) => (
+            <li class:list={["logo-item", sponsor.data.livello]}>
+              <img src={sponsor.data.logo} alt="" class="logo-img" loading="lazy" />
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   </section>
 )}
 <style>
   .sponsor-strip {
     background: oklch(0.95 0.01 265);
-    padding: clamp(2.5rem, 6vw, 4rem) clamp(1rem, 4vw, 2.5rem);
+    padding: clamp(2.5rem, 6vw, 4rem) 0;
+    overflow: hidden;
   }
   .inner {
     max-width: 1200px;
     margin: 0 auto;
     text-align: center;
+    padding: 0 clamp(1rem, 4vw, 2.5rem);
   }
   .sponsor-strip h2 {
     color: var(--bg);
     font-size: clamp(1.5rem, 3.5vw, 2rem);
     margin: 0 0 2rem;
   }
+  .marquee {
+    display: flex;
+    overflow: hidden;
+    /* sfumatura ai bordi: i loghi entrano ed escono morbidi */
+    mask-image: linear-gradient(to right, transparent, oklch(0 0 0) 8%, oklch(0 0 0) 92%, transparent);
+  }
+  .marquee-track {
+    display: flex;
+    flex-shrink: 0;
+    animation: marquee-scroll 32s linear infinite;
+  }
+  .marquee:hover .marquee-track,
+  .marquee:focus-within .marquee-track {
+    animation-play-state: paused;
+  }
+  @keyframes marquee-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
   .logos {
     display: flex;
-    flex-wrap: wrap;
+    flex-shrink: 0;
     align-items: center;
-    justify-content: center;
-    gap: clamp(1.5rem, 4vw, 3rem);
+    gap: clamp(2.5rem, 6vw, 5rem);
     list-style: none;
     margin: 0;
-    padding: 0;
+    padding: 0 clamp(1.25rem, 3vw, 2.5rem);
   }
   .logo-img {
     height: 2.5rem;
@@ -68,6 +101,21 @@ const sponsors = (await getCollection("sponsor")).sort(
     filter: grayscale(0);
   }
   @media (prefers-reduced-motion: reduce) {
+    .marquee-track {
+      animation: none;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .marquee-track > ul[aria-hidden] {
+      display: none;
+    }
+    .marquee {
+      mask-image: none;
+    }
+    .logos {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
     .logo-img {
       transition: none;
     }

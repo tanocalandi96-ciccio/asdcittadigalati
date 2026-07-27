@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675">
+  <!-- COVER FITTIZIA segnaposto: sostituire con foto reale -->
+  <rect width="1200" height="675" fill="#101830"/>
+  <polygon points="0,675 1200,270 1200,675" fill="#0032F4" opacity="0.85"/>
+  <polygon points="0,675 1200,420 1200,675" fill="#0d1226" opacity="0.6"/>
+  <circle cx="960" cy="170" r="110" fill="none" stroke="#E1791B" stroke-width="6" opacity="0.7"/>
+  <circle cx="960" cy="170" r="70" fill="none" stroke="#F8EA21" stroke-width="4" opacity="0.5"/>
+  <text x="70" y="120" font-family="Arial Black, sans-serif" font-size="54" font-weight="900" fill="#F8EA21" opacity="0.9">FOTO IN ARRIVO</text>
+</svg>
