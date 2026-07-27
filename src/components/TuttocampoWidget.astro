@@ -1,0 +1,128 @@
+---
+import { WIDGET_URLS, TEAM_PAGE } from "../lib/tuttocampo";
+
+type WidgetType = "classifica" | "risultati" | "calendario";
+interface Props {
+  type: WidgetType;
+  title: string;
+}
+const { type, title } = Astro.props;
+
+const widgetUrl = WIDGET_URLS[type];
+
+const FALLBACK_COPY: Record<WidgetType, { kicker: string; testo: string }> = {
+  classifica: {
+    kicker: "Classifica in aggiornamento",
+    testo:
+      "La classifica del girone è in aggiornamento: i gironi di Prima Categoria per la stagione 2026-27 non sono ancora stati resi noti dalla FIGC. Non appena pubblicati, qui trovi la classifica aggiornata in automatico.",
+  },
+  risultati: {
+    kicker: "Risultati in aggiornamento",
+    testo:
+      "I risultati del campionato sono in aggiornamento: i gironi di Prima Categoria per la stagione 2026-27 non sono ancora stati resi noti dalla FIGC. Non appena pubblicati, qui trovi l'esito di ogni partita in automatico.",
+  },
+  calendario: {
+    kicker: "Calendario in aggiornamento",
+    testo:
+      "Il calendario è in aggiornamento: i gironi di Prima Categoria per la stagione 2026-27 non sono ancora stati resi noti dalla FIGC. Non appena pubblicati, le partite compariranno qui in automatico.",
+  },
+};
+const { kicker, testo } = FALLBACK_COPY[type];
+
+// Altezza minima diversa per tipo: la classifica di un girone ha molte righe,
+// risultati/calendario ne hanno meno. Evita tre box identici quando i widget saranno attivi.
+const MIN_HEIGHT: Record<WidgetType, string> = {
+  classifica: "520px",
+  risultati: "420px",
+  calendario: "400px",
+};
+
+const boxId = `widget-box-${type}`;
+const iframeId = `tuttocampo-widget-${type}`;
+const fallbackId = `widget-fallback-${type}`;
+---
+<div class="tuttocampo-widget" style={{ "--widget-min-height": MIN_HEIGHT[type] }}>
+  {widgetUrl ? (
+    <>
+      <div class="widget-box" id={boxId}>
+        <iframe id={iframeId} src={widgetUrl} title={title} loading="lazy"></iframe>
+      </div>
+      <p class="fallback-text hidden" id={fallbackId}>
+        Il widget non è al momento disponibile.
+        <a href={TEAM_PAGE} target="_blank" rel="noopener noreferrer">Scheda su Tuttocampo</a>
+      </p>
+      <script define:vars={{ boxId, iframeId, fallbackId }}>
+        const box = document.getElementById(boxId);
+        const iframe = document.getElementById(iframeId);
+        const fallbackText = document.getElementById(fallbackId);
+        let loaded = false;
+        iframe?.addEventListener("load", () => { loaded = true; });
+        window.setTimeout(() => {
+          if (!loaded) {
+            box?.classList.add("widget-failed");
+            fallbackText?.classList.remove("hidden");
+          }
+        }, 4000);
+      </script>
+    </>
+  ) : (
+    <div class="fallback-block">
+      <p class="kicker">{kicker}</p>
+      <p>{testo}</p>
+      <a class="tuttocampo-link" href={TEAM_PAGE} target="_blank" rel="noopener noreferrer">
+        Scheda su Tuttocampo
+      </a>
+    </div>
+  )}
+</div>
+<style>
+  .widget-box iframe {
+    width: 100%;
+    min-height: var(--widget-min-height, 400px);
+    border: none;
+  }
+  .widget-box.widget-failed {
+    display: none;
+  }
+  .fallback-text.hidden {
+    display: none;
+  }
+  .fallback-block {
+    background: var(--bg);
+    border-radius: 4px;
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+    text-align: center;
+  }
+  .kicker {
+    color: var(--giallo);
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.85rem;
+    margin: 0 0 0.75rem;
+  }
+  .fallback-block p:not(.kicker) {
+    max-width: 55ch;
+    margin: 0 auto 1.5rem;
+    color: var(--text);
+  }
+  .tuttocampo-link {
+    display: inline-block;
+    padding: 0.7rem 1.75rem;
+    background: var(--giallo);
+    color: var(--bg);
+    font-family: var(--font-display);
+    text-decoration: none;
+    font-size: 1rem;
+    transition: background-color 0.2s var(--ease-out-quart);
+  }
+  .tuttocampo-link:hover,
+  .tuttocampo-link:focus-visible {
+    background: var(--oro);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .tuttocampo-link {
+      transition: none;
+    }
+  }
+</style>
