@@ -160,6 +160,28 @@ funziona e la società non è autonoma.
 8. **Consegnare la guida**: `docs/GUIDA-PANNELLO.md` è scritta per il
    volontario, non per chi sviluppa. Stampala o mandagliela.
 
+#### Provare il pannello senza repository (modalità locale)
+
+Sveltia sa lavorare direttamente sui file del computer, senza GitHub e senza
+servizi: utile per provare il pannello prima di pubblicare il repository, o per
+sistemare contenuti in locale.
+
+1. Avviare il sito: `npm run dev`
+2. Aprire **`http://localhost:4321/admin/index.html`**
+   (in sviluppo `/admin/` da solo restituisce 404: il server di Astro non
+   genera l'indice delle cartelle per i file statici. Online funziona
+   normalmente `/admin/`.)
+3. Premere **Work with Local Repository** e selezionare la cartella del
+   progetto quando il browser la chiede.
+
+Le modifiche vengono scritte subito sui file del progetto e si vedono nel sito
+in tempo reale. Non finiscono online finché non si ricompila e si pubblica.
+
+Serve Chrome o Edge: Firefox e Safari non supportano ancora l'accesso alle
+cartelle richiesto da questa modalità.
+
+Se qualcosa va storto, `git checkout .` riporta i contenuti all'ultimo commit.
+
 #### Perché non Netlify Identity
 
 La versione precedente del pannello usava Decap CMS con Netlify Identity e Git
