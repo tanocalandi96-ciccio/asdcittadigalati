@@ -13,12 +13,19 @@ import Base from "../layouts/Base.astro";
     <section class="policy-section">
       <div class="inner">
         <h2 class="font-display">Titolare del trattamento</h2>
-        <!-- DATI-SOCIETA FITTIZI: segnaposto in attesa dei dati reali (vedi docs/RICHIESTE-SOCIETA.md) -->
+        <!-- Denominazione e codice fiscale verificati sul Registro nazionale
+             delle attività sportive dilettantistiche (Dipartimento per lo Sport).
+             MANCANO ANCORA, e senza di questi l'informativa non è completa:
+             indirizzo esatto della sede legale, email, PEC. -->
         <p>
           Il titolare del trattamento dei dati raccolti tramite questo sito è
-          <strong>A.S.D. Città di Galati</strong>, Via del Municipio 1, 98070 Galati
-          Mamertino (ME). Codice fiscale 00000000000. PEC cittadigalati@pec.example,
-          email info@cittadigalati.example.
+          l’<strong>Associazione Sportiva Dilettantistica Città di Galati</strong>,
+          con sede in Galati Mamertino (ME), codice fiscale <strong>02828410833</strong>.
+        </p>
+        <p class="da-completare">
+          Indirizzo completo della sede, indirizzo email e PEC sono in corso di
+          pubblicazione: fino ad allora le richieste vanno inviate tramite il modulo
+          nella pagina <a href="/contatti">Contatti</a>.
         </p>
         <p>
           La società non ha nominato un Responsabile della protezione dei dati: non
@@ -221,6 +228,11 @@ import Base from "../layouts/Base.astro";
     background: color-mix(in oklch, var(--bg) 70%, var(--surface));
     padding: 0.1rem 0.35rem;
     font-size: 0.9em;
+  }
+  .da-completare {
+    border-left: 0;
+    color: var(--oro);
+    font-size: 0.9rem;
   }
   .aggiornamento {
     color: var(--oro);

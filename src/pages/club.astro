@@ -3,38 +3,46 @@ import Base from "../layouts/Base.astro";
 import Timeline from "../components/Timeline.astro";
 import EmbedConsenso from "../components/EmbedConsenso.astro";
 
-// TAPPE FITTIZIE: inventate per mostrare come si legge la linea del tempo.
-// Da sostituire con la storia vera (vedi docs/RICHIESTE-SOCIETA.md, punto 2.4).
+// Tappe ricostruite da fonti pubbliche (stampa locale, Tuttocampo, Registro
+// nazionale ASD). NON sono piu' inventate, ma vanno comunque CONFERMATE dalla
+// societa', che sola conosce date e dettagli esatti: le fonti giornalistiche
+// possono sbagliare e mancano gli anni fra il 2017 e il 2025.
 const tappe = [
   {
-    anno: "1968",
-    titolo: "Il primo pallone",
+    anno: "Anni '60",
+    titolo: "Le radici",
     testo:
-      "Un gruppo di amici comincia a giocare sul terreno in salita sopra il paese. Non c'e' ancora una società, solo maglie spaiate e la voglia di sfidare i comuni vicini.",
+      "Il calcio a Galati Mamertino affonda le radici negli anni Sessanta, con le prime formazioni di paese e una tradizione che passa di generazione in generazione.",
   },
   {
-    anno: "1974",
-    titolo: "Nasce la società",
+    anno: "2017",
+    titolo: "Nasce l'ASD Città di Galati",
     testo:
-      "Prima iscrizione ufficiale al campionato provinciale. I colori scelti sono quelli dello stemma civico: giallo, blu e rosso.",
+      "A luglio un gruppo di amici e appassionati dà vita alla nuova società, dalla fusione di Mamertina e San Basilio, le due realtà che avevano dato lustro al calcio galatese. Il nome Mamertina continua a vivere dentro il progetto.",
   },
   {
-    anno: "1991",
-    titolo: "Il Ducezio-Parafioriti",
+    anno: "2020",
+    titolo: "Il Ducezio in erba sintetica",
     testo:
-      "Il paese inaugura il campo sportivo con la tribuna in cemento. Le domeniche di casa diventano un appuntamento fisso per tutto il borgo.",
+      "Il campo sportivo Ducezio-Nello Parafioriti viene rinnovato con il manto in erba sintetica: una casa vera per le domeniche del paese.",
   },
   {
-    anno: "2009",
-    titolo: "La promozione",
+    anno: "2018-2024",
+    titolo: "La scalata",
     testo:
-      "La stagione più bella di sempre si chiude con il salto di categoria e una festa in piazza che dura fino a notte.",
+      "Due secondi posti in Prima Categoria e due campionati di Promozione disputati con risultati lusinghieri: in pochi anni la società si costruisce una collocazione stabile nel calcio dei Nebrodi.",
   },
   {
-    anno: "2026",
+    anno: "2025-26",
+    titolo: "Salvezza in Promozione",
+    testo:
+      "La squadra chiude il campionato di Promozione, girone B, centrando la permanenza dopo una stagione combattuta.",
+  },
+  {
+    anno: "2026-27",
     titolo: "Prima Categoria, girone D",
     testo:
-      "La società riparte con una rosa rinnovata e un settore giovanile in crescita, con l'obiettivo di restare il punto di riferimento sportivo di Galati Mamertino.",
+      "La società riparte dalla Prima Categoria con una rosa rinnovata e l'obiettivo di restare il punto di riferimento sportivo di Galati Mamertino.",
   },
 ];
 
@@ -52,22 +60,30 @@ const googleMapsUrl = "https://www.google.com/maps/search/?api=1&query=Campo+spo
     <section class="storia">
       <div class="inner">
         <h1 class="font-display">Il Club</h1>
-        <!-- TESTO-STORIA FITTIZIO: segnaposto narrativo in attesa del testo reale (vedi docs/RICHIESTE-SOCIETA.md) -->
+        <!-- Testo ricostruito da fonti pubbliche (stampa locale, Wikipedia,
+             Registro nazionale ASD). DA FAR CONFERMARE alla società prima di
+             andare online: nomi, date e sfumature le conoscono solo loro. -->
         <p>
-          Il calcio a Galati Mamertino è una storia di piazze, di campetti in salita e di
-          domeniche che fermano il paese. L'ASD Città di Galati raccoglie questa eredità:
-          una società nata dalla passione di un gruppo di amici e cresciuta fino a diventare
-          la casa calcistica di tutto il borgo, dai pulcini ai veterani della tribuna.
+          A Galati Mamertino il pallone rotola dagli anni Sessanta, ma per un lungo periodo
+          il paese ha corso il rischio di restare senza una squadra. Le due società del
+          comune, la <strong>Mamertina</strong> e il <strong>San Basilio</strong>, quella
+          della contrada dai colori giallo-blu, portavano avanti due storie parallele in un
+          territorio che, da solo, non poteva reggerne due.
         </p>
         <p>
-          I colori sociali, il giallo, il blu e il rosso dello stemma, ripresi dallo scudo
-          civico con la torre, raccontano il legame con il territorio dei Nebrodi. Ogni
-          partita al Ducezio-Parafioriti è più di novanta minuti: è il paese che si ritrova.
+          Nel <strong>luglio 2017</strong> la scelta che cambia tutto: le due società si
+          fondono e nasce l'<strong>ASD Città di Galati</strong>. Non un azzeramento, ma una
+          somma: storia, tradizione, forze economiche ed energie giovanili di entrambe, per
+          impedire che il calcio sparisse dal paese. Il nome della Mamertina continua a
+          vivere dentro il progetto.
         </p>
         <p>
-          Oggi il club milita in Prima Categoria con un obiettivo dichiarato: fare bene sul
-          campo e continuare a essere un punto di riferimento per i ragazzi di Galati, dentro
-          e fuori dal rettangolo di gioco.
+          Da lì la crescita: due secondi posti in Prima Categoria, poi due campionati di
+          Promozione. Nel 2020 il campo <strong>Ducezio-Nello Parafioriti</strong> viene
+          rinnovato con il manto sintetico e diventa una casa vera per le domeniche del
+          paese. Oggi la società riparte dalla Prima Categoria con lo stesso obiettivo
+          dichiarato dall'inizio: essere un punto di riferimento sportivo e umano per
+          Galati Mamertino.
         </p>
       </div>
       <!-- FOTO FITTIZIA generata: sostituire con una foto d'archivio vera della societa' -->
