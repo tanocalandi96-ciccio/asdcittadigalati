@@ -1,14 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <!-- Stemma semplificato ASD Citta di Galati: cerchio bordato oro con le tre
-       fasce verticali blu-giallo-rosso dello stemma originale (assets/logo-original.jpeg).
-       A 16px lo stemma completo e' illeggibile: qui restano solo la sagoma tonda
-       bordata e i tre colori, riconoscibili anche in miniatura. -->
+  <!-- Stemma semplificato ASD Citta di Galati: sagoma a scudo (non un cerchio:
+       a 16px un cerchio con tre fasce verticali blu-giallo-rosso si legge come
+       una bandiera nazionale, es. Romania) bordata oro con le tre fasce
+       verticali blu-giallo-rosso dello stemma originale
+       (assets/logo-original.jpeg, che ha sagoma a scudo, non tonda).
+       A 16px lo stemma completo e' illeggibile: qui restano solo la sagoma a
+       scudo bordata e i tre colori, riconoscibili anche in miniatura. -->
   <defs>
     <clipPath id="mark-clip">
-      <circle cx="16" cy="16" r="13" />
+      <path d="M9.2 4.8 L22.8 4.8 Q27.1 4.8 27.1 9.1 L27.1 15 L16 27.8 L5 15 L5 9.1 Q5 4.8 9.2 4.8 Z" />
     </clipPath>
   </defs>
-  <circle cx="16" cy="16" r="15" fill="#E1791B" />
+  <path d="M8 3 L24 3 Q29 3 29 8 L29 15 L16 30 L3 15 L3 8 Q3 3 8 3 Z" fill="#E1791B" />
   <g clip-path="url(#mark-clip)">
     <rect x="3" y="3" width="8.7" height="26" fill="#0032F4" />
     <rect x="11.7" y="3" width="8.7" height="26" fill="#F8EA21" />

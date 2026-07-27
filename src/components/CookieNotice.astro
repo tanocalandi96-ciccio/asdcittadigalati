@@ -85,9 +85,14 @@ const STORAGE_KEY = "cookie-notice-dismessa";
     var notice = document.getElementById("cookie-notice");
     var dismiss = document.getElementById("cookie-notice-dismiss");
     if (!notice || !dismiss) return;
+    var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     try {
       if (localStorage.getItem(STORAGE_KEY) !== "1") {
         notice.classList.add("is-visible");
+      } else {
+        // Già chiuso in una visita precedente: fuori dal tab order fin da subito,
+        // non solo spinto fuori schermo dalla transform (vedi commento sotto).
+        notice.hidden = true;
       }
     } catch (e) {
       // localStorage non disponibile: mostra comunque l'avviso.
@@ -95,6 +100,22 @@ const STORAGE_KEY = "cookie-notice-dismessa";
     }
     dismiss.addEventListener("click", function () {
       notice.classList.remove("is-visible");
+      // La sola transform (translateY fuori schermo) lascia l'elemento nel DOM,
+      // nell'accessibility tree e nel tab order: con `hidden` lo si rimuove
+      // davvero. Si aspetta la fine della transizione per non tagliare
+      // l'animazione di chiusura; sotto prefers-reduced-motion non c'è
+      // transizione da aspettare (transitionend non scatterebbe mai).
+      if (reduceMotion) {
+        notice.hidden = true;
+      } else {
+        notice.addEventListener(
+          "transitionend",
+          function () {
+            notice.hidden = true;
+          },
+          { once: true }
+        );
+      }
       try {
         localStorage.setItem(STORAGE_KEY, "1");
       } catch (e) {
