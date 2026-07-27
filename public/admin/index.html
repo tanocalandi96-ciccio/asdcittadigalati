@@ -9,5 +9,19 @@
 </head>
 <body>
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  <script>
+    // Senza questo redirect, chi accetta l'invito via email e imposta la
+    // password atterra sulla home del sito invece che loggato in /admin
+    // (bug noto di Netlify Identity + Decap CMS). Vedi docs/HANDOFF.md.
+    if (window.netlifyIdentity) {
+      window.netlifyIdentity.on("init", (user) => {
+        if (!user) {
+          window.netlifyIdentity.on("login", () => {
+            document.location.href = "/admin/";
+          });
+        }
+      });
+    }
+  </script>
 </body>
 </html>
