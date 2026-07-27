@@ -2,6 +2,13 @@
   command = "npm run build"
   publish = "dist"
 
+# ANTEPRIMA: nessuna indicizzazione finche' i contenuti sono fittizi.
+# Rimuovere questo blocco (e sistemare public/robots.txt) alla messa online.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
 [[headers]]
   for = "/hero-frames/*"
   [headers.values]
