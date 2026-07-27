@@ -48,21 +48,22 @@ const fallbackId = `widget-fallback-${type}`;
         <iframe id={iframeId} src={widgetUrl} title={title} loading="lazy"></iframe>
       </div>
       <p class="fallback-text hidden" id={fallbackId}>
-        Il widget non è al momento disponibile.
+        Il widget non è al momento disponibile.{" "}
         <a href={TEAM_PAGE} target="_blank" rel="noopener noreferrer">Scheda su Tuttocampo</a>
       </p>
       <script define:vars={{ boxId, iframeId, fallbackId }}>
         const box = document.getElementById(boxId);
         const iframe = document.getElementById(iframeId);
         const fallbackText = document.getElementById(fallbackId);
-        let loaded = false;
-        iframe?.addEventListener("load", () => { loaded = true; });
-        window.setTimeout(() => {
-          if (!loaded) {
-            box?.classList.add("widget-failed");
-            fallbackText?.classList.remove("hidden");
-          }
-        }, 4000);
+        const timeoutId = window.setTimeout(() => {
+          box?.classList.add("widget-failed");
+          fallbackText?.classList.remove("hidden");
+        }, 10000);
+        iframe?.addEventListener("load", () => {
+          window.clearTimeout(timeoutId);
+          box?.classList.remove("widget-failed");
+          fallbackText?.classList.add("hidden");
+        });
       </script>
     </>
   ) : (
