@@ -36,6 +36,12 @@ import Base from "../layouts/Base.astro";
             <textarea id="messaggio" name="messaggio" rows="6" required></textarea>
           </div>
           <button type="submit">Invia messaggio</button>
+          <!-- Informativa nel punto in cui i dati vengono raccolti: e' quanto
+               chiede l'articolo 13 del GDPR, non basta averla in fondo. -->
+          <p class="form-privacy">
+            I dati inseriti servono solo a rispondere e non vengono usati per altro.
+            Leggi l'<a href="/privacy">informativa privacy</a>.
+          </p>
         </form>
 
         <aside class="dati-societari">
@@ -119,6 +125,13 @@ import Base from "../layouts/Base.astro";
   .field textarea {
     resize: vertical;
   }
+  .form-privacy {
+    margin: 0.9rem 0 0;
+    font-size: 0.8rem;
+    color: color-mix(in oklch, var(--text) 72%, transparent);
+    max-width: 52ch;
+  }
+  .form-privacy a { color: var(--giallo); }
   .contact-form button {
     align-self: flex-start;
     padding: 0.8rem 2rem;

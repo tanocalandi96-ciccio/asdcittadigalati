@@ -1,18 +1,30 @@
 ---
-// Avviso cookie informativo, non un banner di consenso: il sito non ha
-// cookie di profilazione propri ne' analytics. Segnala solo che i widget
-// di terze parti (Tuttocampo, mappa OpenStreetMap) possono impostarne.
-// Non e' un blocking wall: il contenuto della pagina resta sempre
-// consultabile e la barra non intercetta lo scroll.
-const STORAGE_KEY = "cookie-notice-dismessa";
+// Barra di scelta sui servizi di terze parti.
+//
+// Non e' un "banner informativo": qui la scelta ha un effetto reale. Finche'
+// l'utente non accetta, gli iframe di OpenStreetMap e Tuttocampo NON vengono
+// inseriti nel documento (vedi EmbedConsenso.astro), quindi nessun server
+// esterno viene contattato.
+//
+// Non e' nemmeno un muro che copre la pagina: il contenuto resta leggibile e
+// lo scorrimento non viene bloccato. "Rifiuta" e' allo stesso livello di
+// "Accetta", come chiede il Garante: niente pulsante nascosto o in grigio.
 ---
-<div class="cookie-notice" id="cookie-notice" role="region" aria-label="Informativa sui cookie">
-  <p>
-    Nessun cookie di profilazione nostro. I widget Tuttocampo e la mappa OpenStreetMap
-    possono impostarne di terze parti. <a href="/privacy">Scopri di più</a>
-    <button type="button" id="cookie-notice-dismiss">Ho capito</button>
-  </p>
+<div class="cookie-notice" id="cookie-notice" role="region" aria-label="Scelta sui servizi di terze parti">
+  <div class="cn-inner">
+    <p class="cn-testo">
+      Questo sito non usa cookie di profilazione e non ha statistiche di
+      navigazione. Alcuni contenuti però arrivano da altri siti, la mappa e i
+      dati del campionato: caricarli significa collegarsi ai loro server.
+      <a href="/privacy">Informativa completa</a>
+    </p>
+    <div class="cn-azioni">
+      <button type="button" data-cn-rifiuta class="cn-secondario">Rifiuta</button>
+      <button type="button" data-cn-accetta class="cn-primario">Accetta</button>
+    </div>
+  </div>
 </div>
+
 <style>
   .cookie-notice {
     position: fixed;
@@ -22,105 +34,79 @@ const STORAGE_KEY = "cookie-notice-dismessa";
     z-index: 40;
     background: var(--surface);
     color: var(--text);
-    padding: 0.6rem clamp(1rem, 4vw, 2.5rem);
+    padding: 0.7rem clamp(1rem, 4vw, 2.5rem);
     border-top: 1px solid var(--oro);
     transform: translateY(120%);
     transition: transform 0.4s var(--ease-out-quart);
   }
-  .cookie-notice.is-visible {
-    transform: translateY(0);
-  }
-  /* Bottone dentro il paragrafo (non un flex sibling): scorre come l'ultima
-     "parola" del testo invece di finire su una riga tutta sua, cosi' la
-     barra resta bassa anche su schermi stretti dove testo + bottone non
-     starebbero affiancati. */
-  .cookie-notice p {
+  .cookie-notice.is-visible { transform: translateY(0); }
+
+  .cn-inner {
+    max-width: 1100px;
     margin: 0 auto;
-    max-width: 68ch;
-    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .cn-testo {
+    margin: 0;
+    flex: 1 1 26rem;
     font-size: 0.85rem;
+    line-height: 1.5;
   }
-  .cookie-notice a {
-    color: var(--giallo);
-  }
-  .cookie-notice button {
-    display: inline-block;
-    vertical-align: middle;
-    margin-left: 0.6rem;
-    padding: 0.3rem 1.1rem;
-    background: var(--giallo);
-    color: var(--bg);
-    border: none;
+  .cn-testo a { color: var(--giallo); }
+  .cn-azioni { display: flex; gap: 0.5rem; flex-shrink: 0; }
+  .cn-azioni button {
     font-family: var(--font-display);
-    font-size: 0.9rem;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    padding: 0.45rem 1.2rem;
     cursor: pointer;
+    border: 1px solid var(--oro);
   }
-  .cookie-notice button:hover,
-  .cookie-notice button:focus-visible {
-    background: var(--oro);
-  }
-  /* Schermi bassi (telefoni piccoli in orizzontale, iPhone SE...): la barra
-     va tenuta più compatta per non arrivare a ridosso della CTA dell'hero,
-     che nel punto finale dello scroll siede a 12vh dal fondo. */
+  /* Stesso peso visivo per le due scelte: rifiutare deve costare quanto
+     accettare, non di piu'. */
+  .cn-primario { background: var(--giallo); color: var(--bg); }
+  .cn-primario:hover, .cn-primario:focus-visible { background: var(--oro); }
+  .cn-secondario { background: transparent; color: var(--text); }
+  .cn-secondario:hover, .cn-secondario:focus-visible { background: var(--bg); color: var(--giallo); }
+
   @media (max-height: 700px) {
-    .cookie-notice {
-      padding: 0.4rem clamp(1rem, 4vw, 2.5rem);
-    }
-    .cookie-notice p {
-      font-size: 0.78rem;
-    }
-    .cookie-notice button {
-      padding: 0.25rem 0.9rem;
-      font-size: 0.8rem;
-    }
+    .cookie-notice { padding: 0.5rem clamp(1rem, 4vw, 2.5rem); }
+    .cn-testo { font-size: 0.78rem; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .cookie-notice {
-      transition: none;
-    }
+    .cookie-notice { transition: none; }
   }
 </style>
-<script is:inline define:vars={{ STORAGE_KEY }}>
-  (function () {
-    var notice = document.getElementById("cookie-notice");
-    var dismiss = document.getElementById("cookie-notice-dismiss");
-    if (!notice || !dismiss) return;
-    var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    try {
-      if (localStorage.getItem(STORAGE_KEY) !== "1") {
-        notice.classList.add("is-visible");
-      } else {
-        // Già chiuso in una visita precedente: fuori dal tab order fin da subito,
-        // non solo spinto fuori schermo dalla transform (vedi commento sotto).
-        notice.hidden = true;
-      }
-    } catch (e) {
-      // localStorage non disponibile: mostra comunque l'avviso.
-      notice.classList.add("is-visible");
+
+<script>
+  import { leggiConsenso, scriviConsenso } from "../lib/consenso";
+
+  const barra = document.getElementById("cookie-notice");
+  if (barra) {
+    const nascondi = () => {
+      barra.classList.remove("is-visible");
+      const fine = () => (barra.hidden = true);
+      if (matchMedia("(prefers-reduced-motion: reduce)").matches) fine();
+      else barra.addEventListener("transitionend", fine, { once: true });
+    };
+
+    if (leggiConsenso() !== null) {
+      // Scelta gia' fatta: la barra non deve nemmeno esistere per la tastiera.
+      barra.hidden = true;
+    } else {
+      requestAnimationFrame(() => barra.classList.add("is-visible"));
+      barra.querySelector("[data-cn-accetta]")?.addEventListener("click", () => {
+        scriviConsenso("accettato");
+        nascondi();
+      });
+      barra.querySelector("[data-cn-rifiuta]")?.addEventListener("click", () => {
+        scriviConsenso("rifiutato");
+        nascondi();
+      });
     }
-    dismiss.addEventListener("click", function () {
-      notice.classList.remove("is-visible");
-      // La sola transform (translateY fuori schermo) lascia l'elemento nel DOM,
-      // nell'accessibility tree e nel tab order: con `hidden` lo si rimuove
-      // davvero. Si aspetta la fine della transizione per non tagliare
-      // l'animazione di chiusura; sotto prefers-reduced-motion non c'è
-      // transizione da aspettare (transitionend non scatterebbe mai).
-      if (reduceMotion) {
-        notice.hidden = true;
-      } else {
-        notice.addEventListener(
-          "transitionend",
-          function () {
-            notice.hidden = true;
-          },
-          { once: true }
-        );
-      }
-      try {
-        localStorage.setItem(STORAGE_KEY, "1");
-      } catch (e) {
-        // Nessuna persistenza possibile: l'avviso ricomparirà al prossimo caricamento.
-      }
-    });
-  })();
+  }
 </script>

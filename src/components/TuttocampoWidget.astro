@@ -1,5 +1,6 @@
 ---
 import { WIDGET_URLS, TEAM_PAGE } from "../lib/tuttocampo";
+import EmbedConsenso from "./EmbedConsenso.astro";
 
 type WidgetType = "classifica" | "risultati" | "calendario" | "prossimaPartita";
 interface Props {
@@ -52,7 +53,13 @@ const fallbackId = `widget-fallback-${type}`;
   {widgetUrl ? (
     <>
       <div class="widget-box" id={boxId}>
-        <iframe id={iframeId} src={widgetUrl} title={title} loading="lazy"></iframe>
+        <EmbedConsenso
+          src={widgetUrl}
+          title={title}
+          servizio="Tuttocampo"
+          altezza={MIN_HEIGHT[type]}
+          nota="Classifica e risultati sono forniti da Tuttocampo. Per mostrarli il browser deve collegarsi ai loro server, che possono impostare cookie propri."
+        />
       </div>
       <p class="fallback-text hidden" id={fallbackId}>
         Il widget non è al momento disponibile.{" "}

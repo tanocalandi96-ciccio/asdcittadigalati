@@ -1,6 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
 import Timeline from "../components/Timeline.astro";
+import EmbedConsenso from "../components/EmbedConsenso.astro";
 
 // TAPPE FITTIZIE: inventate per mostrare come si legge la linea del tempo.
 // Da sostituire con la storia vera (vedi docs/RICHIESTE-SOCIETA.md, punto 2.4).
@@ -100,11 +101,12 @@ const googleMapsUrl = "https://www.google.com/maps/search/?api=1&query=Campo+spo
         <p class="campo-nome">Ducezio-Parafioriti</p>
         <p class="campo-indirizzo">Galati Mamertino (ME), Sicilia</p>
         <div class="map-wrap">
-          <iframe
-            title="Mappa di Galati Mamertino (ME), comune del campo Ducezio-Parafioriti"
+          <EmbedConsenso
             src={osmEmbedUrl}
-            loading="lazy"
-          ></iframe>
+            title="Mappa di Galati Mamertino (ME), comune del campo Ducezio-Parafioriti"
+            servizio="OpenStreetMap"
+            nota="La mappa è servita da OpenStreetMap: per mostrarla il browser deve collegarsi ai loro server, che registrano l'indirizzo IP. Il campo si trova comunque a Galati Mamertino (ME), e qui sotto c'è il link diretto a Google Maps."
+          />
         </div>
         <p class="map-note">
           La mappa è centrata su Galati Mamertino: le coordinate esatte del campo non sono

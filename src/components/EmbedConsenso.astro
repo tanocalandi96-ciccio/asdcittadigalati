@@ -1,0 +1,149 @@
+---
+// Contenitore per un contenuto di terze parti (mappa, widget) che NON viene
+// caricato finche' l'utente non acconsente.
+//
+// L'iframe non e' nel documento: e' un template inerte. Il browser non
+// contatta nessun server esterno finche' non si accetta, ne' al primo
+// caricamento ne' dopo. E' la differenza fra un banner che informa e un
+// banner che serve davvero a qualcosa.
+interface Props {
+  src: string;
+  title: string;
+  servizio: string; // nome leggibile, es. "OpenStreetMap"
+  altezza?: string;
+  nota?: string;
+}
+const { src, title, servizio, altezza = "100%", nota } = Astro.props;
+const id = `embed-${Math.random().toString(36).slice(2, 9)}`;
+---
+<div class="embed" data-embed data-servizio={servizio} style={`--embed-h:${altezza}`}>
+  <!-- Il contenuto vero sta in un <template>: inerte finche' non si accetta. -->
+  <template data-embed-template>
+    <iframe src={src} title={title} loading="lazy"></iframe>
+  </template>
+
+  <div class="embed-blocco" id={id}>
+    <p class="embed-titolo font-display">Contenuto di {servizio}</p>
+    <p class="embed-testo">
+      {nota ??
+        `Per mostrarlo il browser deve collegarsi ai server di ${servizio}, che possono registrare il tuo indirizzo IP e impostare cookie propri.`}
+    </p>
+    <div class="embed-azioni">
+      <button type="button" data-embed-attiva>Carica {servizio}</button>
+      <label class="embed-sempre">
+        <input type="checkbox" data-embed-sempre checked />
+        Ricorda la scelta
+      </label>
+    </div>
+    <p class="embed-link"><a href="/privacy">Come trattiamo i dati</a></p>
+  </div>
+</div>
+
+<style>
+  .embed {
+    position: relative;
+    min-height: var(--embed-h, 100%);
+    height: var(--embed-h, 100%);
+  }
+  .embed :global(iframe) {
+    width: 100%;
+    height: 100%;
+    min-height: var(--embed-h, 100%);
+    border: none;
+    display: block;
+  }
+  .embed-blocco {
+    height: 100%;
+    min-height: var(--embed-h, 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    text-align: center;
+    padding: clamp(1.25rem, 4vw, 2rem);
+    background: color-mix(in oklch, var(--bg) 80%, var(--surface));
+    border: 1px dashed color-mix(in oklch, var(--oro) 55%, transparent);
+  }
+  .embed-titolo {
+    margin: 0;
+    font-size: 1rem;
+    text-transform: uppercase;
+    color: var(--giallo);
+  }
+  .embed-testo {
+    margin: 0;
+    max-width: 46ch;
+    font-size: 0.85rem;
+    color: color-mix(in oklch, var(--text) 78%, transparent);
+  }
+  .embed-azioni {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 0.35rem;
+  }
+  .embed-azioni button {
+    background: var(--giallo);
+    color: var(--bg);
+    border: none;
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    padding: 0.55rem 1.3rem;
+    cursor: pointer;
+  }
+  .embed-azioni button:hover,
+  .embed-azioni button:focus-visible { background: var(--oro); }
+  .embed-sempre {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+    color: color-mix(in oklch, var(--text) 72%, transparent);
+    cursor: pointer;
+  }
+  .embed-link { margin: 0.15rem 0 0; font-size: 0.78rem; }
+  .embed-link a { color: var(--oro); }
+</style>
+
+<script>
+  import { leggiConsenso, scriviConsenso } from "../lib/consenso";
+
+  const attiva = (box: HTMLElement) => {
+    const tpl = box.querySelector<HTMLTemplateElement>("[data-embed-template]");
+    const blocco = box.querySelector<HTMLElement>(".embed-blocco");
+    if (!tpl || box.dataset.attivo === "1") return;
+    box.dataset.attivo = "1";
+    box.appendChild(tpl.content.cloneNode(true));
+    blocco?.remove();
+  };
+
+  const inizializza = () => {
+    const consenso = leggiConsenso();
+    for (const box of document.querySelectorAll<HTMLElement>("[data-embed]")) {
+      if (consenso === "accettato") {
+        attiva(box);
+        continue;
+      }
+      const bottone = box.querySelector<HTMLButtonElement>("[data-embed-attiva]");
+      bottone?.addEventListener("click", () => {
+        const ricorda = box.querySelector<HTMLInputElement>("[data-embed-sempre]")?.checked;
+        // "Ricorda" vale per tutti gli embed del sito; senza spunta il
+        // caricamento vale solo per questo riquadro, adesso.
+        if (ricorda) scriviConsenso("accettato");
+        attiva(box);
+      });
+    }
+  };
+
+  inizializza();
+  // Se il consenso arriva dalla barra in basso, gli embed si accendono subito.
+  document.addEventListener("consenso-cambiato", (e) => {
+    if ((e as CustomEvent).detail === "accettato") {
+      document.querySelectorAll<HTMLElement>("[data-embed]").forEach(attiva);
+    }
+  });
+</script>
