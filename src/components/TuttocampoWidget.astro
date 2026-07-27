@@ -12,19 +12,19 @@ const widgetUrl = WIDGET_URLS[type];
 
 const FALLBACK_COPY: Record<WidgetType, { kicker: string; testo: string }> = {
   classifica: {
-    kicker: "Classifica in aggiornamento",
+    kicker: "Classifica non ancora disponibile",
     testo:
-      "La classifica del girone è in aggiornamento: i gironi di Prima Categoria per la stagione 2026-27 non sono ancora stati resi noti dalla FIGC. Non appena pubblicati, qui trovi la classifica aggiornata in automatico.",
+      "La classifica non è ancora disponibile: la stagione 2026-27 non è ancora iniziata. Non appena si gioca la prima giornata, qui trovi la classifica aggiornata in automatico.",
   },
   risultati: {
-    kicker: "Risultati in aggiornamento",
+    kicker: "Risultati non ancora disponibili",
     testo:
-      "I risultati del campionato sono in aggiornamento: i gironi di Prima Categoria per la stagione 2026-27 non sono ancora stati resi noti dalla FIGC. Non appena pubblicati, qui trovi l'esito di ogni partita in automatico.",
+      "I risultati non sono ancora disponibili: la stagione 2026-27 non è ancora iniziata. Non appena si gioca la prima giornata, qui trovi l'esito di ogni partita in automatico.",
   },
   calendario: {
-    kicker: "Calendario in aggiornamento",
+    kicker: "Calendario non ancora disponibile",
     testo:
-      "Il calendario è in aggiornamento: i gironi di Prima Categoria per la stagione 2026-27 non sono ancora stati resi noti dalla FIGC. Non appena pubblicati, qui trovi il prossimo turno in automatico.",
+      "Il calendario non è ancora disponibile: la stagione 2026-27 non è ancora iniziata. Non appena viene pubblicato, qui trovi il prossimo turno in automatico.",
   },
 };
 const { kicker, testo } = FALLBACK_COPY[type];

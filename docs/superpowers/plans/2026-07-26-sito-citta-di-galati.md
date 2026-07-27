@@ -16,7 +16,7 @@
 - Divieti impeccable: niente border-left/right colorati >1px come accento, niente gradient text, niente glassmorphism, niente card grid identiche, niente em dash nei testi.
 - Motion: ease-out-quart; tutto dietro `prefers-reduced-motion`. Cursore-pallone solo `(pointer: fine)`.
 - Budget peso Home mobile primo load < 3,5 MB. Lighthouse mobile target: Perf ≥ 90, A11y ≥ 95.
-- Squadra: Prima Categoria Sicilia 2026-27 (MAI scrivere "Promozione"). Campo: "Ducezio-Parafioriti", Galati Mamertino (ME). Tuttocampo squadra id 916584.
+- Squadra: Prima Categoria Sicilia 2026-27 (mai scrivere la categoria della stagione precedente). Campo: "Ducezio-Parafioriti", Galati Mamertino (ME). Tuttocampo squadra id 916584.
 - Commit frequenti, messaggi in italiano, footer `Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>`.
 
 ---
@@ -628,7 +628,7 @@ git commit -m "feat: pagine squadra, news, club e contatti"
 ```ts
 // src/lib/tuttocampo.ts
 export const TEAM_ID = "916584";
-export const TEAM_PAGE = "https://www.tuttocampo.it/Sicilia/Promozione/GironeB/Squadra/CittaDiGalati/916584/Scheda";
+export const TEAM_PAGE = "https://www.tuttocampo.it/Sicilia/PrimaCategoria/GironeD/Squadra/CittaDiGalati/916584/Scheda";
 // NOTA: URL widget per girone Prima Categoria 2026-27 da generare dall'account
 // Tuttocampo quando la FIGC pubblica i gironi. Fino ad allora WIDGET_URLS resta vuoto
 // e i componenti mostrano il fallback.

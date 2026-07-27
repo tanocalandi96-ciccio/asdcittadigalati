@@ -165,30 +165,34 @@ Poi collegare il dominio in Netlify: Site settings → Domain management → Add
 custom domain, seguendo le istruzioni Netlify per puntare i DNS. Nessun altro
 file del sito va toccato per questo passaggio.
 
-### 2.3 Widget Tuttocampo: attivazione a gironi pubblicati
+### 2.3 Widget Tuttocampo: attivazione widget
 
-Oggi (stagione 2026-27) la FIGC non ha ancora pubblicato i gironi di Prima
-Categoria Sicilia, quindi `src/lib/tuttocampo.ts` ha `WIDGET_URLS` vuoto e le
-tre sezioni di `/stagione` (Classifica, Risultati, Calendario) mostrano un
-testo di fallback con link alla scheda squadra su Tuttocampo. Il codice del
-fallback e dei widget è già pronto: **non va toccato nulla oltre al file
-sotto**.
+Il girone è noto: la squadra gioca il campionato di **Prima Categoria Girone
+D Sicilia**, stagione 2026-27 (verificato il 27/07/2026 seguendo il redirect
+della scheda squadra). La stagione però non è ancora iniziata (zero partite
+giocate a questa consegna), quindi `src/lib/tuttocampo.ts` ha `WIDGET_URLS`
+vuoto e le tre sezioni di `/stagione` (Classifica, Risultati, Calendario)
+mostrano un testo di fallback onesto ("non ancora disponibile perché la
+stagione non è iniziata") con link alla scheda squadra su Tuttocampo. Il
+codice del fallback e dei widget è già pronto: **non va toccato nulla oltre
+al file sotto**.
 
-**Passo-passo, quando i gironi sono pubblicati:**
+`TEAM_PAGE` in `src/lib/tuttocampo.ts` punta già all'URL corretto:
+`https://www.tuttocampo.it/Sicilia/PrimaCategoria/GironeD/Squadra/CittaDiGalati/916584/Scheda`.
 
-1. Aprire la scheda squadra su Tuttocampo:
-   `https://www.tuttocampo.it/Sicilia/Promozione/GironeB/Squadra/CittaDiGalati/916584/Scheda`
-   (questo URL, `TEAM_PAGE` nel codice, è quello ereditato dalla stagione
-   precedente: verificare che punti ancora alla squadra giusta una volta
-   assegnato il nuovo girone di Prima Categoria).
+**Generare gli URL widget richiede l'accesso all'account Tuttocampo della
+società**: lo sviluppatore non può farlo da solo senza quelle credenziali.
+Passo-passo per chi ha l'accesso (tipicamente all'inizio del campionato):
 
-2. Cercare nella scheda squadra (o nell'area riservata Tuttocampo per le
-   società affiliate, se disponibile) la funzione "Widget" o "Inserisci nel
-   tuo sito": Tuttocampo genera per ogni squadra un codice `<iframe>` con un
-   URL sorgente specifico per tre contenuti distinti — classifica del
-   girone, risultati del campionato, calendario delle partite. Serve l'URL
-   dentro `src="..."` di ciascun iframe generato, non il codice HTML
-   completo.
+1. Accedere all'account Tuttocampo della società (o all'area riservata
+   Tuttocampo per le società affiliate, se disponibile).
+
+2. Dalla scheda squadra (l'URL sopra) cercare la funzione "Widget" o
+   "Inserisci nel tuo sito": Tuttocampo genera per ogni squadra un codice
+   `<iframe>` con un URL sorgente specifico per tre contenuti distinti —
+   classifica del girone, risultati del campionato, calendario delle
+   partite. Serve l'URL dentro `src="..."` di ciascun iframe generato, non
+   il codice HTML completo.
 
 3. Aprire `src/lib/tuttocampo.ts` e valorizzare `WIDGET_URLS` con i tre URL
    trovati:
@@ -209,11 +213,12 @@ sotto**.
 5. **Verifica visiva** (equivalente di uno screenshot, in parole): aprire
    `/stagione`. Ogni sezione che ha un URL configurato deve mostrare l'iframe
    di Tuttocampo dentro un riquadro con intestazione della sezione (non più
-   il testo "in aggiornamento"); le sezioni senza URL restano nel loro
-   fallback. Se un iframe non carica entro 4 secondi, il codice esistente
+   il testo "non ancora disponibile"); le sezioni senza URL restano nel loro
+   fallback. Se un iframe non carica entro 10 secondi, il codice esistente
    nasconde l'iframe e torna a mostrare il testo di fallback con link alla
-   scheda squadra (comportamento già implementato, nessuna azione
-   necessaria).
+   scheda squadra; se poi il widget carica comunque (rete lenta ma
+   funzionante), il riquadro riappare da solo e il fallback torna nascosto
+   (comportamento già implementato, nessuna azione necessaria).
 
 6. La stessa configurazione alimenta anche il box "Prossima partita" in
    home (`NextMatch.astro`, usa il widget `calendario`): si attiva da sola
