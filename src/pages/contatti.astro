@@ -12,7 +12,9 @@ import Base from "../layouts/Base.astro";
 
     <section class="contatti-section">
       <div class="inner grid">
-        <form name="contatti" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="contact-form">
+        <!-- action: dopo l'invio si resta dentro il sito invece di finire
+             sulla schermata standard di Netlify. -->
+        <form name="contatti" method="POST" action="/grazie" data-netlify="true" netlify-honeypot="bot-field" class="contact-form">
           <input type="hidden" name="form-name" value="contatti" />
           <p class="hidden-field">
             <label>

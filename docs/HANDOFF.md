@@ -173,8 +173,21 @@ export default defineConfig({
 ```
 
 Poi collegare il dominio in Netlify: Site settings → Domain management → Add
-custom domain, seguendo le istruzioni Netlify per puntare i DNS. Nessun altro
-file del sito va toccato per questo passaggio.
+custom domain, seguendo le istruzioni Netlify per puntare i DNS.
+
+**Tre cose vanno fatte insieme al dominio**, perché tutte dipendono da `site`
+e prima genererebbero indirizzi su `localhost`:
+
+1. **Sitemap** — `npm i @astrojs/sitemap`, poi in `astro.config.mjs`:
+   `integrations: [sitemap({ filter: (p) => !p.includes('/admin') })]`
+2. **Feed RSS** — `npm i @astrojs/rss` e una pagina `src/pages/rss.xml.js`
+   che legga la collezione `news`.
+3. **Anteprima social per singolo articolo** — oggi ogni pagina dichiara la
+   stessa immagine (lo stemma). Va aggiunta una prop `image` a
+   `src/layouts/Base.astro` e passata da `src/pages/news/[slug].astro` con la
+   copertina dell'articolo. Conta più di quanto sembri: la maggior parte dei
+   visitatori arriva da un link condiviso su Facebook o Instagram, e oggi
+   quella condivisione mostra sempre la stessa immagine.
 
 ### 2.3 Widget Tuttocampo: attivazione widget
 
