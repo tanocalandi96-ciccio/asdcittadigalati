@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import Base from "../layouts/Base.astro";
 import PlayerCard from "../components/PlayerCard.astro";
+import PlayerWall from "../components/PlayerWall.astro";
 
 const ROLE_ORDER = ["Portiere", "Difensore", "Centrocampista", "Attaccante"] as const;
 const ROLE_LABELS: Record<(typeof ROLE_ORDER)[number], string> = {
@@ -23,6 +24,14 @@ const gruppi = ROLE_ORDER.map((ruolo) => ({
 const staff = (await getCollection("staff")).sort(
   (a, b) => a.data.ordine - b.data.ordine || a.data.nome.localeCompare(b.data.nome, "it")
 );
+
+// La parete curva mostra tutta la rosa in ordine di ruolo e numero: e' il
+// colpo d'occhio. La griglia raggruppata sotto resta la consultazione vera.
+const rosaOrdinata = [...giocatori].sort(
+  (a, b) =>
+    ROLE_ORDER.indexOf(a.data.ruolo) - ROLE_ORDER.indexOf(b.data.ruolo) ||
+    (a.data.numero ?? 999) - (b.data.numero ?? 999)
+);
 ---
 <Base title="Squadra" description="Rosa e staff tecnico dell'ASD Città di Galati, stagione 2026-27">
   <main id="main" tabindex="-1">
@@ -32,6 +41,8 @@ const staff = (await getCollection("staff")).sort(
         <p class="kicker">Rosa e staff tecnico, stagione 2026-27</p>
       </div>
     </section>
+
+    {rosaOrdinata.length > 0 && <PlayerWall players={rosaOrdinata} />}
 
     {gruppi.length > 0 ? (
       gruppi.map((gruppo, i) => (
