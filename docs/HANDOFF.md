@@ -77,6 +77,17 @@ sito pubblico.
 (Netlify ricostruisce il sito a ogni salvataggio dal CMS, in genere entro 1-2
 minuti).
 
+**Regola sulle dimensioni delle immagini (importante)**: le foto caricate dal
+pannello vengono pubblicate **così come sono**, senza ridimensionamento
+automatico. Una foto scattata col telefono pesa in genere 3-5 MB: venti foto
+così sulla pagina Squadra rendono il sito lentissimo per chi lo apre in 4G,
+che è il caso normale dei tifosi. Prima di caricare, ridimensionare ogni
+immagine a **massimo 1200 pixel di lato lungo** e **sotto i 300 KB**. Va bene
+qualunque strumento gratuito (su telefono l'app Foto in "Modifica → Ridimensiona",
+su computer un sito come squoosh.app). Nel dubbio, meglio una foto più
+piccola: sullo schermo di un telefono la differenza non si vede, sul tempo di
+caricamento sì.
+
 ---
 
 ## Parte 2 — Per lo sviluppatore
@@ -306,5 +317,38 @@ npx lighthouse http://localhost:<porta-di-preview> \
 Target: Performance ≥ 90, Accessibility ≥ 95 sulla home. Se Performance
 scende sotto 90, il primo sospetto è il peso dei frame hero: ridurre il
 numero di frame mobile o la qualità WebP (punto 2.4) e ripetere la misura.
-I punteggi misurati in questa consegna sono riportati in
-`.superpowers/sdd/task-12-report.md`.
+
+Punteggi misurati alla consegna (27/07/2026, home mobile su build di
+produzione): **Performance 99, Accessibility 100, Best Practices 100,
+SEO 100**. LCP 1,7 s, CLS 0. Sono il riferimento: uno scostamento in
+basso dopo una modifica indica una regressione, non una fluttuazione.
+
+### 2.7 Checklist prima di andare online
+
+Da completare tutta prima di puntare il dominio pubblico sul sito. Ogni voce
+è bloccante: il sito funziona senza, ma va online incompleto.
+
+- [ ] Dominio registrato **a nome della società**, non dello sviluppatore
+- [ ] `site` valorizzato in `astro.config.mjs` col dominio reale (punto 2.2).
+      Senza, i link canonici mancano e l'anteprima social che Facebook mette
+      in cache al primo giro punta all'indirizzo provvisorio `.netlify.app`
+- [ ] Segnaposto `<!-- DATI-SOCIETA -->` sostituiti con i dati legali reali
+      in `src/components/Footer.astro`, `src/pages/contatti.astro` e
+      `src/pages/privacy.astro` (ragione sociale completa, sede, CF/P.IVA,
+      email, PEC, telefono)
+- [ ] Segnaposto `<!-- TESTO-STORIA -->` sostituito con la storia vera della
+      società in `src/pages/club.astro`
+- [ ] Loghi sponsor caricati con il livello corretto (main, tecnico, partner)
+- [ ] Rosa e staff inseriti, con liberatorie raccolte per le foto (per i
+      minori la liberatoria è obbligatoria: senza, niente foto)
+- [ ] URL widget Tuttocampo generati e inseriti (punto 2.3), a campionato
+      iniziato
+- [ ] Editor della società invitato su Netlify Identity e messo alla prova
+      su `/admin`: deve riuscire a pubblicare una news da solo
+- [ ] `npm test` e `npm run build` verdi, Lighthouse rimisurato (punto 2.6)
+
+Migliorie note, non bloccanti, da valutare dopo il primo deploy: pagina 404
+personalizzata, pagina di ringraziamento dopo l'invio del form contatti,
+`robots.txt` e sitemap, paginazione della sezione News quando gli articoli
+supereranno la ventina, `favicon.ico` rigenerato dallo stemma (oggi i browser
+moderni usano `favicon.svg`, che è già lo stemma corretto).
