@@ -24,7 +24,7 @@ const FALLBACK_COPY: Record<WidgetType, { kicker: string; testo: string }> = {
   calendario: {
     kicker: "Calendario in aggiornamento",
     testo:
-      "Il calendario è in aggiornamento: i gironi di Prima Categoria per la stagione 2026-27 non sono ancora stati resi noti dalla FIGC. Non appena pubblicati, le partite compariranno qui in automatico.",
+      "Il calendario è in aggiornamento: i gironi di Prima Categoria per la stagione 2026-27 non sono ancora stati resi noti dalla FIGC. Non appena pubblicati, qui trovi il prossimo turno in automatico.",
   },
 };
 const { kicker, testo } = FALLBACK_COPY[type];
@@ -66,7 +66,7 @@ const fallbackId = `widget-fallback-${type}`;
       </script>
     </>
   ) : (
-    <div class="fallback-block">
+    <div class:list={["fallback-block", { "fallback-block--feature": type === "classifica" }]}>
       <p class="kicker">{kicker}</p>
       <p>{testo}</p>
       <a class="tuttocampo-link" href={TEAM_PAGE} target="_blank" rel="noopener noreferrer">
@@ -105,6 +105,23 @@ const fallbackId = `widget-fallback-${type}`;
     max-width: 55ch;
     margin: 0 auto 1.5rem;
     color: var(--text);
+  }
+  /* Trattamento dedicato alla Classifica: niente card centrata, composizione
+     asimmetrica allineata a sinistra e tipografia più grande, per darle un
+     peso diverso da Risultati e Calendario nello stato di fallback. */
+  .fallback-block--feature {
+    background: transparent;
+    border-radius: 0;
+    padding: clamp(1.5rem, 4vw, 2.5rem) 0;
+    text-align: left;
+  }
+  .fallback-block--feature .kicker {
+    font-size: clamp(0.95rem, 1.4vw, 1.1rem);
+  }
+  .fallback-block--feature p:not(.kicker) {
+    max-width: 48rem;
+    margin: 0 0 1.75rem;
+    font-size: clamp(1.05rem, 1.8vw, 1.3rem);
   }
   .tuttocampo-link {
     display: inline-block;
