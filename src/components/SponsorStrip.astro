@@ -14,6 +14,8 @@ const sponsors = (await getCollection("sponsor")).sort(
     {/* Nastro scorrevole: la lista è duplicata (copia aria-hidden) per chiudere
         il giro senza vuoti. Si ferma su hover/focus e con reduced-motion. */}
     <div class="marquee" role="region" aria-label="Loghi degli sponsor">
+      <div class="blur-edge left" aria-hidden="true"></div>
+      <div class="blur-edge right" aria-hidden="true"></div>
       <div class="marquee-track">
         <ul class="logos">
           {sponsors.map((sponsor) => (
@@ -59,8 +61,30 @@ const sponsors = (await getCollection("sponsor")).sort(
   .marquee {
     display: flex;
     overflow: hidden;
-    /* sfumatura ai bordi: i loghi entrano ed escono morbidi */
-    mask-image: linear-gradient(to right, transparent, oklch(0 0 0) 8%, oklch(0 0 0) 92%, transparent);
+    position: relative;
+  }
+  /* Sfocatura progressiva ai due lati: i loghi si dissolvono invece di essere
+     tagliati di netto. Due pannelli con backdrop-filter e una maschera che li
+     fa svanire verso il centro. Dove backdrop-filter manca resta la sola
+     sfumatura di colore: nessuna rottura. */
+  .blur-edge {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: clamp(56px, 12vw, 160px);
+    z-index: 2;
+    pointer-events: none;
+    backdrop-filter: blur(6px);
+  }
+  .blur-edge.left {
+    left: 0;
+    mask-image: linear-gradient(to right, oklch(0 0 0), transparent);
+    background: linear-gradient(to right, oklch(0.95 0.01 265), transparent);
+  }
+  .blur-edge.right {
+    right: 0;
+    mask-image: linear-gradient(to left, oklch(0 0 0), transparent);
+    background: linear-gradient(to left, oklch(0.95 0.01 265), transparent);
   }
   .marquee-track {
     display: flex;
@@ -109,8 +133,8 @@ const sponsors = (await getCollection("sponsor")).sort(
     .marquee-track > ul[aria-hidden] {
       display: none;
     }
-    .marquee {
-      mask-image: none;
+    .blur-edge {
+      display: none;
     }
     .logos {
       flex-wrap: wrap;

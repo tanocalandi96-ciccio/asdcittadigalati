@@ -1,0 +1,175 @@
+---
+// Tabellone della stagione, in stile display a segmenti da bordo campo.
+// NON e' la fila di numeroni con etichetta sotto tipica dei siti aziendali:
+// e' un pannello scuro unico con cifre monospaziate, cornice e spie.
+//
+// I dati veri arriveranno dai widget Tuttocampo a campionato iniziato. Finche'
+// non si gioca, i numeri restano a zero e il pannello lo dichiara: meglio un
+// tabellone spento e onesto che numeri inventati su partite mai giocate.
+interface Props {
+  vinte?: number;
+  pareggiate?: number;
+  perse?: number;
+  golFatti?: number;
+  iniziata?: boolean;
+}
+const { vinte = 0, pareggiate = 0, perse = 0, golFatti = 0, iniziata = false } = Astro.props;
+
+const voci = [
+  { sigla: "V", label: "Vinte", valore: vinte },
+  { sigla: "N", label: "Pareggiate", valore: pareggiate },
+  { sigla: "P", label: "Perse", valore: perse },
+  { sigla: "GF", label: "Gol fatti", valore: golFatti },
+];
+---
+<section class="scoreboard-section" aria-labelledby="score-title">
+  <div class="inner">
+    <div class="panel" data-scoreboard>
+      <div class="panel-head">
+        <span class="spia" aria-hidden="true"></span>
+        <h2 id="score-title" class="font-display">Stagione 2026-27</h2>
+        <span class="stato">{iniziata ? "in corso" : "non iniziata"}</span>
+      </div>
+
+      <dl class="cifre">
+        {voci.map((v) => (
+          <div class="cifra">
+            <dt>
+              <abbr title={v.label}>{v.sigla}</abbr>
+            </dt>
+            <dd class="valore font-display" data-valore={v.valore}>{iniziata ? "0" : "-"}</dd>
+            <span class="etichetta">{v.label}</span>
+          </div>
+        ))}
+      </dl>
+
+      {!iniziata && (
+        <p class="nota">
+          Il campionato non è ancora cominciato. I numeri si accendono da soli
+          dopo la prima giornata.
+        </p>
+      )}
+    </div>
+  </div>
+</section>
+
+<style>
+  .scoreboard-section {
+    padding: clamp(2.5rem, 6vw, 4rem) clamp(1rem, 4vw, 2.5rem);
+  }
+  .inner { max-width: 900px; margin: 0 auto; }
+
+  .panel {
+    background:
+      repeating-linear-gradient(
+        0deg,
+        color-mix(in oklch, var(--bg) 92%, oklch(0 0 0)) 0 2px,
+        color-mix(in oklch, var(--bg) 88%, oklch(0 0 0)) 2px 4px
+      );
+    border: 2px solid var(--oro);
+    padding: clamp(1.1rem, 3vw, 1.75rem);
+  }
+  .panel-head {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    border-bottom: 1px solid color-mix(in oklch, var(--oro) 40%, transparent);
+    padding-bottom: 0.7rem;
+    margin-bottom: clamp(1rem, 3vw, 1.5rem);
+  }
+  .panel-head h2 {
+    font-size: clamp(1.05rem, 2.4vw, 1.4rem);
+    margin: 0;
+    flex: 1;
+  }
+  .spia {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--rosso);
+    box-shadow: 0 0 10px var(--rosso);
+    animation: spia-lampeggia 2.4s ease-in-out infinite;
+  }
+  @keyframes spia-lampeggia {
+    0%, 100% { opacity: 0.35; }
+    50% { opacity: 1; }
+  }
+  .stato {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--oro);
+  }
+
+  .cifre {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: clamp(0.5rem, 2vw, 1.25rem);
+    margin: 0;
+  }
+  .cifra {
+    text-align: center;
+    padding: 0.5rem 0.25rem;
+    border-right: 1px solid color-mix(in oklch, var(--oro) 22%, transparent);
+  }
+  .cifra:last-child { border-right: none; }
+  .cifra dt {
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    color: var(--oro);
+  }
+  .cifra dt abbr { text-decoration: none; }
+  .valore {
+    font-size: clamp(2rem, 7vw, 3.4rem);
+    line-height: 1;
+    margin: 0.15rem 0 0.2rem;
+    color: var(--giallo);
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 0 18px color-mix(in oklch, var(--giallo) 45%, transparent);
+  }
+  .etichetta {
+    display: block;
+    font-size: 0.7rem;
+    color: color-mix(in oklch, var(--text) 65%, transparent);
+  }
+  .nota {
+    margin: clamp(0.9rem, 3vw, 1.4rem) 0 0;
+    font-size: 0.85rem;
+    color: color-mix(in oklch, var(--text) 72%, transparent);
+    text-align: center;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .spia { animation: none; opacity: 0.8; }
+  }
+</style>
+
+<script>
+  // Conteggio da 0 al valore, una volta sola, quando il pannello entra in vista.
+  const panel = document.querySelector<HTMLElement>("[data-scoreboard]");
+  if (panel && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const celle = [...panel.querySelectorAll<HTMLElement>("[data-valore]")];
+    const conta = (el: HTMLElement) => {
+      const target = Number(el.dataset.valore || "0");
+      if (!Number.isFinite(target) || target <= 0) return;
+      const durata = 900;
+      const t0 = performance.now();
+      const step = (t: number) => {
+        const p = Math.min(1, (t - t0) / durata);
+        // ease-out: parte veloce e frena
+        el.textContent = String(Math.round(target * (1 - Math.pow(1 - p, 3))));
+        if (p < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    };
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (!e.isIntersecting) return;
+        celle.forEach(conta);
+        io.disconnect();
+      },
+      { threshold: 0.4 }
+    );
+    io.observe(panel);
+  }
+</script>

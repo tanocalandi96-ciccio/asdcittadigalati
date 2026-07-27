@@ -1,0 +1,175 @@
+---
+// Linea del tempo della storia del club: la linea si traccia mentre si scorre
+// e ogni tappa entra quando la raggiunge. Puro CSS scroll-driven dove il
+// browser lo supporta, ripiego con IntersectionObserver altrove.
+interface Tappa {
+  anno: string;
+  titolo: string;
+  testo: string;
+}
+interface Props {
+  tappe: Tappa[];
+  titolo?: string;
+}
+const { tappe, titolo = "La nostra storia" } = Astro.props;
+---
+<section class="timeline-section" aria-labelledby="timeline-title">
+  <div class="inner">
+    <h2 id="timeline-title" class="font-display">{titolo}</h2>
+
+    <ol class="timeline" data-timeline>
+      <li class="rail" aria-hidden="true"><span class="rail-fill"></span></li>
+      {tappe.map((t) => (
+        <li class="tappa">
+          <span class="pallino" aria-hidden="true"></span>
+          <p class="anno font-display">{t.anno}</p>
+          <h3 class="font-display">{t.titolo}</h3>
+          <p class="testo">{t.testo}</p>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .timeline-section {
+    padding: clamp(2.5rem, 6vw, 4rem) clamp(1rem, 4vw, 2.5rem);
+  }
+  .inner { max-width: 900px; margin: 0 auto; }
+  .timeline-section h2 {
+    font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+    margin: 0 0 clamp(1.5rem, 4vw, 2.5rem);
+  }
+
+  .timeline {
+    position: relative;
+    list-style: none;
+    margin: 0;
+    padding: 0 0 0 clamp(1.75rem, 5vw, 2.75rem);
+  }
+  /* Binario: traccia spenta sempre presente, riempimento che cresce. */
+  .rail {
+    position: absolute;
+    left: 0;
+    top: 0.4rem;
+    bottom: 0.4rem;
+    width: 2px;
+    background: color-mix(in oklch, var(--oro) 28%, transparent);
+  }
+  .rail-fill {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: var(--giallo);
+    transform-origin: top;
+    transform: scaleY(0);
+  }
+
+  .tappa {
+    position: relative;
+    padding: 0 0 clamp(2rem, 5vw, 3rem);
+  }
+  .tappa:last-child { padding-bottom: 0; }
+  .pallino {
+    position: absolute;
+    left: calc(clamp(1.75rem, 5vw, 2.75rem) * -1 - 5px);
+    top: 0.55rem;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--oro);
+    transition: background-color 0.4s var(--ease-out-quart), transform 0.4s var(--ease-out-quart);
+  }
+  .anno {
+    color: var(--giallo);
+    font-size: 1.35rem;
+    line-height: 1;
+    margin: 0 0 0.3rem;
+  }
+  .tappa h3 { font-size: 1.05rem; margin: 0 0 0.35rem; }
+  .testo { margin: 0; max-width: 62ch; color: color-mix(in oklch, var(--text) 88%, transparent); }
+
+  /* Movimento legato allo scroll dove supportato --------------------------- */
+  /* Il riempimento del binario NON usa view(): il binario e' piu' alto del
+     viewport e l'intervallo "entry" diventa degenere (resta a zero). Lo guida
+     un contatore JS legato alle tappe raggiunte, uguale su ogni browser. */
+  .rail-fill {
+    transition: transform 0.9s var(--ease-out-quart);
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .tappa {
+        animation-name: tappa-in;
+        animation-duration: 1s;
+        animation-fill-mode: both;
+        animation-timing-function: ease-out;
+        animation-timeline: view();
+        animation-range: entry 0% cover 22%;
+      }
+    }
+  }
+  @keyframes tappa-in {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  /* Ripiego JS: stesse due animazioni via classi --------------------------- */
+  .timeline.js-fallback .tappa {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.6s var(--ease-out-quart), transform 0.6s var(--ease-out-quart);
+  }
+  .timeline.js-fallback .tappa.dentro {
+    opacity: 1;
+    transform: none;
+  }
+  /* Il pallino si accende quando la tappa e' stata raggiunta, in ogni browser. */
+  .tappa.dentro .pallino {
+    background: var(--giallo);
+    transform: scale(1.15);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rail-fill { transform: scaleY(1); }
+    .tappa { opacity: 1; transform: none; }
+  }
+</style>
+
+<script>
+  const tl = document.querySelector<HTMLElement>("[data-timeline]");
+  if (tl && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const supportoNativo = CSS.supports("animation-timeline: view()");
+    // Senza supporto nativo le tappe entrano via classe, non via CSS scroll.
+    if (!supportoNativo) tl.classList.add("js-fallback");
+
+    const fill = tl.querySelector<HTMLElement>(".rail-fill");
+    const tappe = [...tl.querySelectorAll<HTMLElement>(".tappa")];
+
+    // Tutto su evento scroll: la linea di lettura sta al 72% dell'altezza dello
+    // schermo, ogni tappa che la supera si accende e il binario cresce fino a
+    // li'. Niente IntersectionObserver: cosi' il riempimento e' continuo e non
+    // a scatti, e resta verificabile in qualunque ambiente.
+    const aggiorna = () => {
+      const linea = innerHeight * 0.72;
+      let ultimaRaggiunta = -1;
+      tappe.forEach((t, i) => {
+        const top = t.getBoundingClientRect().top;
+        if (top < linea) {
+          t.classList.add("dentro");
+          ultimaRaggiunta = i;
+        }
+      });
+      if (fill) {
+        const q = (ultimaRaggiunta + 1) / tappe.length;
+        fill.style.transform = `scaleY(${Math.min(1, Math.max(0, q))})`;
+      }
+    };
+    // Cinque letture di posizione per evento: costo trascurabile, quindi si
+    // esegue direttamente senza passare da requestAnimationFrame.
+    addEventListener("scroll", aggiorna, { passive: true });
+    addEventListener("resize", aggiorna);
+    aggiorna();
+  }
+</script>

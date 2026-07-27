@@ -1,5 +1,41 @@
 ---
 import Base from "../layouts/Base.astro";
+import Timeline from "../components/Timeline.astro";
+
+// TAPPE FITTIZIE: inventate per mostrare come si legge la linea del tempo.
+// Da sostituire con la storia vera (vedi docs/RICHIESTE-SOCIETA.md, punto 2.4).
+const tappe = [
+  {
+    anno: "1968",
+    titolo: "Il primo pallone",
+    testo:
+      "Un gruppo di amici comincia a giocare sul terreno in salita sopra il paese. Non c'e' ancora una società, solo maglie spaiate e la voglia di sfidare i comuni vicini.",
+  },
+  {
+    anno: "1974",
+    titolo: "Nasce la società",
+    testo:
+      "Prima iscrizione ufficiale al campionato provinciale. I colori scelti sono quelli dello stemma civico: giallo, blu e rosso.",
+  },
+  {
+    anno: "1991",
+    titolo: "Il Ducezio-Parafioriti",
+    testo:
+      "Il paese inaugura il campo sportivo con la tribuna in cemento. Le domeniche di casa diventano un appuntamento fisso per tutto il borgo.",
+  },
+  {
+    anno: "2009",
+    titolo: "La promozione",
+    testo:
+      "La stagione più bella di sempre si chiude con il salto di categoria e una festa in piazza che dura fino a notte.",
+  },
+  {
+    anno: "2026",
+    titolo: "Prima Categoria, girone D",
+    testo:
+      "La società riparte con una rosa rinnovata e un settore giovanile in crescita, con l'obiettivo di restare il punto di riferimento sportivo di Galati Mamertino.",
+  },
+];
 
 // Coordinate del comune di Galati Mamertino (ME), verificate su Nominatim/OpenStreetMap
 // (query "Galati Mamertino" -> lat 38.0315592, lon 14.7725171). Le coordinate esatte del
@@ -45,6 +81,9 @@ const googleMapsUrl = "https://www.google.com/maps/search/?api=1&query=Campo+spo
         <figcaption>Immagine segnaposto: qui andrà una foto d'archivio della società.</figcaption>
       </figure>
     </section>
+
+    <!-- TAPPE FITTIZIE: vedi commento nel frontmatter -->
+    <Timeline tappe={tappe} />
 
     <section class="campo">
       <!-- FOTO FITTIZIA generata: sostituire con una foto vera del Ducezio-Parafioriti -->

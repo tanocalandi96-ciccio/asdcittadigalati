@@ -1,0 +1,93 @@
+---
+// Nastro tipografico: una parola ripetuta che scorre e accelera con la
+// velocità dello scroll, come un tabellone a LED a bordo campo.
+// Senza JS scorre comunque a velocità costante.
+interface Props {
+  parola?: string;
+  ripetizioni?: number;
+}
+const { parola = "Città di Galati", ripetizioni = 8 } = Astro.props;
+const voci = Array.from({ length: ripetizioni }, (_, i) => i);
+---
+<div class="ribbon" data-ribbon aria-hidden="true">
+  <div class="ribbon-track" data-ribbon-track>
+    {voci.map(() => (
+      <span class="voce font-display">{parola}<i class="sep">✦</i></span>
+    ))}
+    {voci.map(() => (
+      <span class="voce font-display">{parola}<i class="sep">✦</i></span>
+    ))}
+  </div>
+</div>
+
+<style>
+  .ribbon {
+    overflow: hidden;
+    background: var(--giallo);
+    border-top: 2px solid var(--oro);
+    border-bottom: 2px solid var(--oro);
+    padding: 0.5rem 0;
+  }
+  .ribbon-track {
+    display: flex;
+    width: max-content;
+    align-items: center;
+    animation: ribbon-scroll 34s linear infinite;
+    will-change: transform;
+  }
+  .voce {
+    color: var(--bg);
+    font-size: clamp(1.1rem, 2.6vw, 1.8rem);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+  }
+  .sep {
+    font-style: normal;
+    margin: 0 clamp(0.8rem, 2vw, 1.6rem);
+    color: color-mix(in oklch, var(--bg) 55%, var(--oro));
+    font-size: 0.7em;
+  }
+  @keyframes ribbon-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ribbon-track { animation: none; }
+  }
+</style>
+
+<script>
+  // La velocità dello scroll accelera il nastro: fermo scorre piano, scrollando
+  // forte sfreccia. Si torna alla velocità base quando lo scroll si ferma.
+  const ribbon = document.querySelector<HTMLElement>("[data-ribbon]");
+  const track = document.querySelector<HTMLElement>("[data-ribbon-track]");
+  if (ribbon && track && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    let ultimo = scrollY;
+    let spinta = 0;
+    let raf = 0;
+
+    const applica = () => {
+      // spinta si smorza da sola: la durata torna verso quella base
+      spinta *= 0.92;
+      const durata = Math.max(4, 34 - spinta);
+      track.style.animationDuration = `${durata}s`;
+      // oltre una certa velocità il nastro inverte, come un tabellone impazzito
+      track.style.animationDirection = spinta > 6 ? "reverse" : "normal";
+      raf = spinta > 0.4 ? requestAnimationFrame(applica) : 0;
+    };
+
+    addEventListener(
+      "scroll",
+      () => {
+        const d = Math.abs(scrollY - ultimo);
+        ultimo = scrollY;
+        spinta = Math.min(30, spinta + d * 0.25);
+        if (!raf) raf = requestAnimationFrame(applica);
+      },
+      { passive: true }
+    );
+  }
+</script>

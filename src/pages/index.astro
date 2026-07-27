@@ -5,6 +5,7 @@ import Hero from "../components/Hero.astro";
 import NewsCard from "../components/NewsCard.astro";
 import NextMatch from "../components/NextMatch.astro";
 import SponsorStrip from "../components/SponsorStrip.astro";
+import KineticRibbon from "../components/KineticRibbon.astro";
 
 const news = (await getCollection("news"))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
@@ -39,6 +40,8 @@ const news = (await getCollection("news"))
         <p id="paese-claim" class="font-display">Novanta minuti<br />in cui il paese si ferma</p>
       </div>
     </section>
+
+    <KineticRibbon />
 
     <SponsorStrip />
   </main>

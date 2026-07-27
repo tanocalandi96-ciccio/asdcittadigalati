@@ -24,7 +24,13 @@ const year = new Date().getFullYear();
       <p><a href="/privacy">Privacy</a></p>
     </div>
   </div>
-  <p class="footer-copy">&copy; {year} ASD Città di Galati</p>
+  <p class="footer-copy">
+    &copy; {year} ASD Città di Galati
+    <span class="firma">
+      Powered by{" "}
+      <a href="https://elevadigital.it" target="_blank" rel="noopener">Eleva Digital</a>
+    </span>
+  </p>
 </footer>
 <style>
   .site-footer { background: var(--surface); color: var(--text); padding: clamp(2rem, 5vw, 3rem) clamp(1rem, 4vw, 2.5rem) 1.5rem; margin-top: 3rem; }
@@ -36,4 +42,13 @@ const year = new Date().getFullYear();
   a { color: var(--text); }
   a:hover { color: var(--giallo); }
   .footer-copy { text-align: center; max-width: 1200px; margin: 2rem auto 0; padding-top: 1rem; border-top: 1px solid var(--oro); font-size: 0.85rem; }
+  /* Firma dello studio: presente ma discreta, va a capo su schermi stretti. */
+  .firma { display: inline-block; margin-left: 0.5rem; color: color-mix(in oklch, var(--text) 62%, transparent); }
+  .firma::before { content: "·"; margin-right: 0.5rem; }
+  .firma a { color: color-mix(in oklch, var(--text) 78%, transparent); text-decoration: none; border-bottom: 1px solid color-mix(in oklch, var(--oro) 55%, transparent); }
+  .firma a:hover, .firma a:focus-visible { color: var(--giallo); border-bottom-color: var(--giallo); }
+  @media (max-width: 480px) {
+    .firma { display: block; margin: 0.4rem 0 0; }
+    .firma::before { content: none; }
+  }
 </style>

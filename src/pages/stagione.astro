@@ -1,6 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
 import TuttocampoWidget from "../components/TuttocampoWidget.astro";
+import Scoreboard from "../components/Scoreboard.astro";
 ---
 <Base title="Stagione" description="Classifica, risultati e calendario del campionato 2026-27 dell'ASD Città di Galati">
   <main id="main" tabindex="-1">
@@ -13,6 +14,8 @@ import TuttocampoWidget from "../components/TuttocampoWidget.astro";
         </p>
       </div>
     </section>
+
+    <Scoreboard />
 
     <section class="widget-section classifica" aria-labelledby="classifica-title">
       <div class="inner">
