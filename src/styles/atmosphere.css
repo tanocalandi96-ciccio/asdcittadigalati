@@ -36,7 +36,25 @@
   }
 }
 
-/* 2. Riflettori: due bagliori caldi fissi agli angoli alti ----------------- */
+/* Ripiego per i browser SENZA animation-timeline (Firefox, Safari meno
+   recenti): lo script in Base.astro marca i titoli con .reveal-js e accende
+   .reveal-on via IntersectionObserver. Stesso identico movimento, guidato da
+   una transizione invece che dallo scroll. */
+main h2.reveal-js {
+  clip-path: inset(0 100% 0 0);
+  transform: translateX(-0.35em);
+  transition:
+    clip-path 0.9s var(--ease-out-quart),
+    transform 0.9s var(--ease-out-quart);
+}
+main h2.reveal-js.reveal-on {
+  clip-path: inset(0 0 0 0);
+  transform: translateX(0);
+}
+
+/* 2. Riflettori: due coni di luce calda che scendono dagli angoli alti ------ */
+/* Prima versione a opacita' 0.07-0.09: invisibile anche a chi la cercava
+   apposta. Alzata finche' non si vede (27/07/2026). */
 @media (prefers-reduced-motion: no-preference) {
   body::before {
     content: "";
@@ -45,14 +63,14 @@
     pointer-events: none;
     z-index: 1;
     background:
-      radial-gradient(38rem 22rem at -6% -8%, oklch(0.72 0.13 65 / 0.09), transparent 70%),
-      radial-gradient(38rem 22rem at 106% -8%, oklch(0.72 0.13 65 / 0.07), transparent 70%);
-    animation: floodlight-breathe 9s ease-in-out infinite alternate;
+      radial-gradient(52rem 34rem at -8% -12%, oklch(0.75 0.14 65 / 0.22), transparent 68%),
+      radial-gradient(52rem 34rem at 108% -12%, oklch(0.75 0.14 65 / 0.18), transparent 68%);
+    animation: floodlight-breathe 7s ease-in-out infinite alternate;
   }
 }
 
 @keyframes floodlight-breathe {
-  from { opacity: 0.7; }
+  from { opacity: 0.55; }
   to { opacity: 1; }
 }
 
@@ -63,17 +81,17 @@
     position: fixed;
     left: -20%;
     right: -20%;
-    bottom: -2rem;
-    height: 9rem;
+    bottom: -2.5rem;
+    height: 13rem;
     pointer-events: none;
     z-index: 1;
-    background: linear-gradient(to top, oklch(0.35 0.03 265 / 0.16), transparent);
-    filter: blur(14px);
-    animation: fog-drift 26s ease-in-out infinite alternate;
+    background: linear-gradient(to top, oklch(0.42 0.04 265 / 0.3), transparent);
+    filter: blur(16px);
+    animation: fog-drift 22s ease-in-out infinite alternate;
   }
 }
 
 @keyframes fog-drift {
-  from { transform: translateX(-3%) scaleY(1); }
-  to { transform: translateX(3%) scaleY(1.25); }
+  from { transform: translateX(-4%) scaleY(1); }
+  to { transform: translateX(4%) scaleY(1.3); }
 }

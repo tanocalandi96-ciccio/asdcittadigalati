@@ -43,6 +43,30 @@ const ogImage = new URL("/img/og.jpg", Astro.site ?? Astro.url).href;
     <Footer />
     <CookieNotice />
     <BallCursor />
+    <script>
+      // Ripiego per il reveal dei titoli nei browser senza animation-timeline
+      // (Firefox, Safari meno recenti): stessa resa, via IntersectionObserver.
+      // Dove view() esiste ci pensa il CSS e questo script non tocca nulla.
+      const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (!reduced && !CSS.supports("animation-timeline: view()")) {
+        const titles = document.querySelectorAll("main h2");
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const e of entries) {
+              if (e.isIntersecting) {
+                e.target.classList.add("reveal-on");
+                io.unobserve(e.target);
+              }
+            }
+          },
+          { rootMargin: "0px 0px -20% 0px" }
+        );
+        for (const t of titles) {
+          t.classList.add("reveal-js");
+          io.observe(t);
+        }
+      }
+    </script>
   </body>
 </html>
 <style>
