@@ -8,20 +8,28 @@ const { post } = Astro.props;
 const { title, date, cover } = post.data;
 const dateLabel = date.toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" });
 ---
-<article class="news-card" class:list={{ "no-cover": !cover }}>
+<a href={`/news/${post.id}/`} class="news-card" class:list={{ "no-cover": !cover }}>
   {cover && <img src={cover} alt="" class="cover" />}
   <div class="scrim" aria-hidden="true"></div>
   <div class="content">
     <p class="date">{dateLabel}</p>
     <h3>{title}</h3>
   </div>
-</article>
+</a>
 <style>
   .news-card {
     position: relative;
+    display: block;
     aspect-ratio: 4 / 3;
     overflow: hidden;
     background: var(--surface);
+    color: inherit;
+    text-decoration: none;
+    transition: transform 0.3s var(--ease-out-quart);
+  }
+  .news-card:hover,
+  .news-card:focus-visible {
+    transform: translateY(-2px);
   }
   .no-cover {
     background: var(--blu);
@@ -57,5 +65,10 @@ const dateLabel = date.toLocaleDateString("it-IT", { day: "numeric", month: "lon
     color: var(--text);
     font-size: clamp(1.15rem, 2.6vw, 1.7rem);
     margin: 0;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .news-card {
+      transition: none;
+    }
   }
 </style>

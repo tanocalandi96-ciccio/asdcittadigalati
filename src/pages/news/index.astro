@@ -15,11 +15,7 @@ const news = (await getCollection("news")).sort(
         <p class="kicker">Tutte le notizie del club</p>
         {news.length > 0 ? (
           <div class="news-grid">
-            {news.map((post) => (
-              <a href={`/news/${post.id}/`} class="news-link">
-                <NewsCard post={post} />
-              </a>
-            ))}
+            {news.map((post) => <NewsCard post={post} />)}
           </div>
         ) : (
           <p>Nessuna notizia pubblicata al momento.</p>
@@ -44,16 +40,6 @@ const news = (await getCollection("news")).sort(
     color: var(--oro);
     margin: 0 0 2rem;
   }
-  .news-link {
-    display: block;
-    color: inherit;
-    text-decoration: none;
-    transition: transform 0.3s var(--ease-out-quart);
-  }
-  .news-link:hover,
-  .news-link:focus-visible {
-    transform: translateY(-2px);
-  }
   .news-grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -65,11 +51,6 @@ const news = (await getCollection("news")).sort(
     }
     .news-grid > :global(a:first-child) {
       grid-column: span 2;
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .news-link {
-      transition: none;
     }
   }
 </style>

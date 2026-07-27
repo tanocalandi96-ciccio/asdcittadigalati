@@ -20,6 +20,7 @@ const news = (await getCollection("news"))
         <div class="news-grid">
           {news.map((post) => <NewsCard post={post} />)}
         </div>
+        <p class="all-news"><a href="/news">Tutte le news</a></p>
       </div>
     </section>
 
@@ -49,8 +50,19 @@ const news = (await getCollection("news"))
     .news-grid {
       grid-template-columns: repeat(2, 1fr);
     }
-    .news-grid > :global(article:first-child) {
+    .news-grid > :global(a:first-child) {
       grid-column: span 2;
     }
+  }
+  .all-news {
+    margin: 1.5rem 0 0;
+  }
+  .all-news a {
+    color: var(--oro);
+    text-decoration: none;
+  }
+  .all-news a:hover,
+  .all-news a:focus-visible {
+    text-decoration: underline;
   }
 </style>
