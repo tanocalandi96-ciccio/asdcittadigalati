@@ -5,6 +5,13 @@ import { execSync } from "node:child_process";
 import { existsSync, mkdirSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
+// La coda del video sorgente viene scartata: dal fotogramma ~99 (4,08s) in poi
+// lo stemma e' fermo ma Seedance rimette in movimento le nuvole, che per tutto
+// il centro erano immobili. Su uno scrub a scatti quel risveglio si legge come
+// uno stacco brusco del cielo. Misurato su una zona di cielo senza frammenti:
+// differenza media fra fotogrammi 0,1-0,2 al centro contro 0,4-0,6 in coda.
+const USE_SECONDS = 4.08;
+
 const jobs = [
   { key: "desktop", src: "assets/hero-video-master-16x9.mp4", out: "public/hero-frames/desktop", frames: 70, scale: "1280:-2" },
   { key: "mobile", src: "assets/hero-video-mobile-9x16.mp4", out: "public/hero-frames/mobile", frames: 40, scale: "720:-2" },
@@ -21,10 +28,11 @@ for (const { key, src, out, frames, scale } of jobs) {
   if (existsSync(out)) rmSync(out, { recursive: true, force: true });
   mkdirSync(out, { recursive: true });
 
-  const dur = parseFloat(
-    execSync(`ffprobe -v error -show_entries format=duration -of csv=p=0 "${src}"`).toString()
+  const dur = Math.min(
+    USE_SECONDS,
+    parseFloat(execSync(`ffprobe -v error -show_entries format=duration -of csv=p=0 "${src}"`).toString())
   );
-  // durata -> fps per ottenere esattamente il numero di frame voluto
+  // durata utile -> fps per ottenere esattamente il numero di frame voluto
   const fps = (frames / dur).toFixed(4);
 
   let totalKb = 0;
@@ -33,7 +41,7 @@ for (const { key, src, out, frames, scale } of jobs) {
 
   for (const q of QUALITY_ATTEMPTS) {
     execSync(
-      `ffmpeg -y -loglevel error -i "${src}" -vf "fps=${fps},scale=${scale}" -frames:v ${frames} -start_number 0 -c:v libwebp -q:v ${q} "${out}/f-%03d.webp"`,
+      `ffmpeg -y -loglevel error -t ${dur} -i "${src}" -vf "fps=${fps},scale=${scale}" -frames:v ${frames} -start_number 0 -c:v libwebp -q:v ${q} "${out}/f-%03d.webp"`,
       { stdio: "inherit" }
     );
     files = readdirSync(out).filter((f) => f.endsWith(".webp")).sort();

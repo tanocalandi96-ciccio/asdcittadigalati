@@ -1,7 +1,9 @@
 ---
 // Hero scroll-driven: canvas + sequenza WebP, scrub con smoothing.
-// frameIndex() è 1-based (vedi src/lib/scrub.ts); i file su disco sono
-// 0-based (f-000.webp...), quindi l'indice n si mappa sul file n - 1.
+// framePosition() è 1-based e frazionaria (vedi src/lib/scrub.ts); i file su
+// disco sono 0-based (f-000.webp...), quindi l'indice n si mappa sul file n - 1.
+// La parte decimale dissolve un frame nel successivo: senza, ogni tacca di
+// rotellina salta piu' frame in un colpo e si vede lo stacco (nuvole e luci).
 ---
 <section class="hero" id="hero">
   <div class="stage">
@@ -17,7 +19,10 @@
   </div>
 </section>
 <style>
-  .hero { height: 250vh; }
+  /* 450vh danno ~3,5 schermate di corsa per la sequenza: circa 45px di scroll
+     per frame invece di 17, cosi' una tacca di rotellina ne avanza due o tre
+     e il movimento resta leggibile. */
+  .hero { height: 450vh; }
   .stage { position: sticky; top: 0; height: 100vh; overflow: hidden; }
   canvas, #hero-fallback { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
   canvas { display: none; }
@@ -28,7 +33,7 @@
   @media (prefers-reduced-motion: reduce) { .hero { height: 100vh; } .overlay { opacity: 1; transform: none; } }
 </style>
 <script>
-  import { frameIndex, lerp } from "../lib/scrub";
+  import { framePosition, lerp } from "../lib/scrub";
 
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const canvas = document.getElementById("hero-canvas") as HTMLCanvasElement;
@@ -68,24 +73,47 @@
     const ctx = canvas.getContext("2d")!;
     let target = 1, current = 1, raf = 0;
 
+    // Disegna un frame in cover sul canvas, con opacita' data.
+    function paint(img: HTMLImageElement, alpha: number) {
+      const { width: cw, height: ch } = canvas;
+      const s = Math.max(cw / img.width, ch / img.height);
+      const w = img.width * s, h = img.height * s;
+      ctx.globalAlpha = alpha;
+      ctx.drawImage(img, (cw - w) / 2, (ch - h) / 2, w, h);
+      ctx.globalAlpha = 1;
+    }
+
+    // Cerca il frame caricato piu' vicino a i, entro una finestra ragionevole:
+    // durante il caricamento progressivo qualche frame puo' non essere pronto.
+    function nearestLoaded(i: number): HTMLImageElement | undefined {
+      for (let d = 0; d <= count; d++) {
+        if (frames[i - d]) return frames[i - d];
+        if (frames[i + d]) return frames[i + d];
+      }
+      return undefined;
+    }
+
     function draw() {
       current = lerp(current, target, 0.18);
-      const idx = Math.round(current);
-      const img = frames[idx] ?? frames[1];
-      if (img) {
-        const { width: cw, height: ch } = canvas;
-        const s = Math.max(cw / img.width, ch / img.height);
-        const w = img.width * s, h = img.height * s;
-        ctx.drawImage(img, (cw - w) / 2, (ch - h) / 2, w, h);
+      // Dissolvenza fra il frame corrente e il successivo in base alla parte
+      // decimale: evita lo stacco netto quando lo scroll salta piu' frame.
+      const lo = Math.max(1, Math.min(count, Math.floor(current)));
+      const hi = Math.min(count, lo + 1);
+      const mix = Math.min(1, Math.max(0, current - lo));
+      const imgLo = frames[lo] ?? nearestLoaded(lo);
+      const imgHi = frames[hi] ?? imgLo;
+      if (imgLo) {
+        paint(imgLo, 1);
+        if (imgHi && imgHi !== imgLo && mix > 0.01) paint(imgHi, mix);
       }
       overlay.classList.toggle("on", target >= count - 2);
-      if (Math.abs(current - target) > 0.05) raf = requestAnimationFrame(draw);
+      if (Math.abs(current - target) > 0.01) raf = requestAnimationFrame(draw);
       else raf = 0;
     }
 
     function onScroll() {
       const range = Math.max(1, (document.getElementById("hero")!.offsetHeight) - innerHeight);
-      target = frameIndex(scrollY, range, count);
+      target = framePosition(scrollY, range, count);
       if (!raf) raf = requestAnimationFrame(draw);
     }
 
