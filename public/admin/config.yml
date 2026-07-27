@@ -74,4 +74,4 @@ collections:
         name: "url"
         widget: "string"
         required: false
-        pattern: ["^https?://.+", "Deve essere un URL valido (es. https://esempio.it)"]
+        pattern: ["^https?://\\S+$", "Deve essere un URL valido (es. https://esempio.it)"]
