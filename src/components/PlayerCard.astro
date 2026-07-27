@@ -11,7 +11,7 @@ const alt = hasFoto ? `Foto di ${nome}` : `Segnaposto: foto non disponibile per 
 ---
 <article class="player-card">
   <div class="photo-wrap">
-    <img src={foto ?? "/img/silhouette.svg"} alt={alt} class="photo" loading="lazy" />
+    <img src={foto || "/img/silhouette.svg"} alt={alt} class="photo" loading="lazy" />
     {numero !== undefined && (
       <span class="number">
         <span class="visually-hidden">Numero di maglia </span>{numero}
@@ -25,6 +25,8 @@ const alt = hasFoto ? `Foto di ${nome}` : `Segnaposto: foto non disponibile per 
 </article>
 <style>
   .player-card {
+    display: flex;
+    flex-direction: column;
     background: var(--surface);
   }
   .photo-wrap {
@@ -58,6 +60,7 @@ const alt = hasFoto ? `Foto di ${nome}` : `Segnaposto: foto non disponibile per 
     white-space: nowrap;
   }
   .info {
+    flex: 1;
     padding: 0.75rem 0.9rem 1rem;
   }
   .nome {

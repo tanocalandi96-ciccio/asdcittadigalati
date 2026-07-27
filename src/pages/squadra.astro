@@ -67,7 +67,7 @@ const staff = (await getCollection("staff")).sort(
                 : `Segnaposto: foto non disponibile per ${membro.data.nome}`;
               return (
                 <li>
-                  <img src={membro.data.foto ?? "/img/silhouette.svg"} alt={alt} loading="lazy" />
+                  <img src={membro.data.foto || "/img/silhouette.svg"} alt={alt} loading="lazy" />
                   <div>
                     <p class="nome">{membro.data.nome}</p>
                     <p class="incarico">{membro.data.incarico}</p>

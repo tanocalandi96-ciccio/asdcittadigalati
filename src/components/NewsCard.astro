@@ -32,7 +32,18 @@ const dateLabel = date.toLocaleDateString("it-IT", { day: "numeric", month: "lon
     transform: translateY(-2px);
   }
   .no-cover {
-    background: var(--blu);
+    aspect-ratio: 16 / 9;
+    max-height: 320px;
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+  }
+  .no-cover .content {
+    position: static;
+    width: 100%;
+  }
+  .no-cover h3 {
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
   }
   .cover {
     position: absolute;
