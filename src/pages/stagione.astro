@@ -3,13 +3,13 @@ import Base from "../layouts/Base.astro";
 import TuttocampoWidget from "../components/TuttocampoWidget.astro";
 import Scoreboard from "../components/Scoreboard.astro";
 ---
-<Base title="Stagione" description="Classifica, risultati e calendario del campionato 2026-27 dell'ASD Città di Galati">
+<Base title="Stagione" description="Classifica, risultati e marcatori del campionato 2026-27 dell'ASD Città di Galati">
   <main id="main" tabindex="-1">
     <section class="intro">
       <div class="inner">
         <h1 class="font-display">Stagione</h1>
         <p class="kicker">
-          Classifica, risultati e calendario del campionato 2026-27, aggiornati in automatico da
+          Classifica, risultati e marcatori del campionato 2026-27, aggiornati in automatico da
           Tuttocampo.
         </p>
       </div>
@@ -41,13 +41,13 @@ import Scoreboard from "../components/Scoreboard.astro";
       </div>
     </section>
 
-    <section class="widget-section calendario" aria-labelledby="calendario-title">
+    <section class="widget-section marcatori" aria-labelledby="marcatori-title">
       <div class="inner">
         <div class="section-heading">
           <span class="section-index font-display" aria-hidden="true">03</span>
-          <h2 id="calendario-title" class="font-display">Calendario</h2>
+          <h2 id="marcatori-title" class="font-display">Marcatori</h2>
         </div>
-        <TuttocampoWidget type="calendario" title="Calendario del campionato - widget Tuttocampo" />
+        <TuttocampoWidget type="marcatori" title="Classifica marcatori del girone - widget Tuttocampo" />
       </div>
     </section>
   </main>
@@ -97,7 +97,7 @@ import Scoreboard from "../components/Scoreboard.astro";
     padding: clamp(2rem, 5vw, 3rem) clamp(1rem, 4vw, 2.5rem);
   }
   .widget-section.risultati,
-  .widget-section.calendario {
+  .widget-section.marcatori {
     border-top: 1px solid color-mix(in oklch, var(--text) 15%, transparent);
   }
   .widget-section.classifica {
@@ -105,7 +105,7 @@ import Scoreboard from "../components/Scoreboard.astro";
     padding-top: clamp(2.5rem, 6vw, 3.5rem);
     padding-bottom: clamp(3rem, 7vw, 4rem);
   }
-  .widget-section.calendario {
+  .widget-section.marcatori {
     padding-bottom: clamp(3.5rem, 8vw, 5.5rem);
   }
   .section-heading {

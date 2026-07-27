@@ -1,19 +1,41 @@
 export const TEAM_ID = "916584";
 export const TEAM_PAGE = "https://www.tuttocampo.it/Sicilia/PrimaCategoria/GironeD/Squadra/CittaDiGalati/916584/Scheda";
 
-// I widget Tuttocampo sono gratuiti per i siti delle societa' sportive e non
-// sono legati al dominio: l'URL ha forma
-//   https://www.tuttocampo.it/WidgetV2/<Tipo>/<GUID-del-girone>
-// I tipi che esistono davvero (verificati uno per uno il 27/07/2026) sono:
-//   Classifica, Risultati, Marcatori, Partita, ProssimaPartita.
-// NON esiste un tipo "Calendario": quell'URL risponde 404. La sezione
-// Calendario di /stagione va quindi risolta in altro modo quando la FIGC
-// pubblichera' il calendario 2026-27 (vedi docs/HANDOFF.md, sezione 2.3).
+// Codice del girone rilasciato dal generatore di Tuttocampo (WidgetApi) per
+// Sicilia / Prima Categoria / Girone D. I widget sono gratuiti per i siti
+// delle societa' sportive.
 //
-// Il GUID del girone non e' pubblicato sulle pagine pubbliche: si ottiene dal
-// generatore su https://www.tuttocampo.it/WidgetApi dopo il login con un
-// account Tuttocampo gratuito, scegliendo Sicilia / Prima Categoria / Girone D.
-// Finche' le chiavi restano vuote, i componenti mostrano il fallback.
-export const WIDGET_URLS: Partial<
-  Record<"classifica" | "risultati" | "calendario" | "prossimaPartita", string>
-> = {};
+// IMPORTANTE, e diverso da quanto si potrebbe pensare: questo codice
+// identifica il GIRONE, non la singola stagione. Senza parametri il widget
+// mostra sempre la STAGIONE IN CORSO, quindi a settembre 2027 si aggiornera'
+// da solo senza che nessuno tocchi niente. Per bloccare una stagione passata
+// esiste il parametro "?y=2025-26", che qui non usiamo di proposito: mostrare
+// la classifica dell'anno scorso sotto il titolo di quest'anno confonde.
+const GIRONE = "cc624f19-d248-45cb-8347-94fe16ecd4bf";
+
+// Tipi che Tuttocampo offre davvero (verificati uno per uno: un tipo
+// "Calendario" NON esiste, quell'URL risponde 404).
+type TipoWidget = "classifica" | "risultati" | "marcatori" | "partita" | "prossimaPartita";
+
+const PERCORSO: Record<TipoWidget, string> = {
+  classifica: "Classifica",
+  risultati: "Risultati",
+  marcatori: "Marcatori",
+  partita: "Partita",
+  prossimaPartita: "ProssimaPartita",
+};
+
+const url = (tipo: TipoWidget) => `https://www.tuttocampo.it/WidgetV2/${PERCORSO[tipo]}/${GIRONE}`;
+
+// Se una chiave viene tolta da qui, la sezione corrispondente torna da sola al
+// testo di attesa: e' la via piu' rapida per spegnere un widget che desse
+// problemi, senza toccare i componenti.
+export const WIDGET_URLS: Partial<Record<TipoWidget, string>> = {
+  classifica: url("classifica"),
+  risultati: url("risultati"),
+  marcatori: url("marcatori"),
+  prossimaPartita: url("prossimaPartita"),
+  // "partita" (ultima giocata) e' disponibile ma non usata: si attiva
+  // aggiungendo la riga e mettendo un <TuttocampoWidget type="partita" />
+  // dove serve.
+};

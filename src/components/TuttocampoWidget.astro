@@ -2,7 +2,7 @@
 import { WIDGET_URLS, TEAM_PAGE } from "../lib/tuttocampo";
 import EmbedConsenso from "./EmbedConsenso.astro";
 
-type WidgetType = "classifica" | "risultati" | "calendario" | "prossimaPartita";
+type WidgetType = "classifica" | "risultati" | "marcatori" | "partita" | "prossimaPartita";
 interface Props {
   type: WidgetType;
   title: string;
@@ -22,10 +22,15 @@ const FALLBACK_COPY: Record<WidgetType, { kicker: string; testo: string }> = {
     testo:
       "I risultati non sono ancora disponibili: la stagione 2026-27 non è ancora iniziata. Non appena si gioca la prima giornata, qui trovi l'esito di ogni partita in automatico.",
   },
-  calendario: {
-    kicker: "Calendario non ancora disponibile",
+  marcatori: {
+    kicker: "Marcatori non ancora disponibili",
     testo:
-      "Il calendario non è ancora disponibile: la stagione 2026-27 non è ancora iniziata. Non appena viene pubblicato, qui trovi tutte le giornate del girone.",
+      "Nessuno ha ancora segnato: la stagione 2026-27 non è cominciata. Dalla prima giornata questa sarà la classifica dei cannonieri del girone.",
+  },
+  partita: {
+    kicker: "Nessuna partita giocata",
+    testo:
+      "La stagione 2026-27 non è ancora iniziata. Qui comparirà il tabellino dell'ultima gara disputata.",
   },
   prossimaPartita: {
     kicker: "Prossima partita non ancora fissata",
@@ -35,14 +40,14 @@ const FALLBACK_COPY: Record<WidgetType, { kicker: string; testo: string }> = {
 };
 const { kicker, testo } = FALLBACK_COPY[type];
 
-// Altezza minima diversa per tipo: la classifica di un girone ha molte righe,
-// risultati/calendario ne hanno meno, il box della prossima partita e' compatto.
-// Evita box identici quando i widget saranno attivi.
+// Altezze consigliate da Tuttocampo per ciascun widget: la classifica di un
+// girone ha molte righe, il box della prossima partita e' compatto.
 const MIN_HEIGHT: Record<WidgetType, string> = {
-  classifica: "520px",
-  risultati: "420px",
-  calendario: "400px",
-  prossimaPartita: "350px",
+  classifica: "800px",
+  risultati: "600px",
+  marcatori: "700px",
+  partita: "400px",
+  prossimaPartita: "400px",
 };
 
 const boxId = `widget-box-${type}`;
@@ -123,7 +128,7 @@ const fallbackId = `widget-fallback-${type}`;
   }
   /* Trattamento dedicato alla Classifica: niente card centrata, composizione
      asimmetrica allineata a sinistra e tipografia più grande, per darle un
-     peso diverso da Risultati e Calendario nello stato di fallback. */
+     peso diverso dalle altre sezioni nello stato di fallback. */
   .fallback-block--feature {
     background: transparent;
     border-radius: 0;
