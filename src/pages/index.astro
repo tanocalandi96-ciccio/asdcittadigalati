@@ -26,10 +26,62 @@ const news = (await getCollection("news"))
 
     <NextMatch />
 
+    <!-- FOTO FITTIZIA generata: sostituire con una foto vera di pubblico al Ducezio -->
+    <section class="paese" aria-labelledby="paese-claim">
+      <img
+        src="/img/foto/tifosi.webp"
+        alt="Tifosi di spalle lungo la recinzione del campo, sotto le torri faro accese all'imbrunire"
+        width="1600"
+        height="894"
+        loading="lazy"
+      />
+      <div class="paese-testo">
+        <p id="paese-claim" class="font-display">Novanta minuti<br />in cui il paese si ferma</p>
+      </div>
+    </section>
+
     <SponsorStrip />
   </main>
 </Base>
 <style>
+  /* Fascia a tutta larghezza: la foto porta l'atmosfera, il claim ci sta sopra
+     ancorato in basso a sinistra. Nessun contenitore, nessuna card. */
+  .paese {
+    position: relative;
+    isolation: isolate;
+  }
+  .paese img {
+    width: 100%;
+    height: clamp(280px, 46vw, 560px);
+    object-fit: cover;
+    display: block;
+  }
+  .paese::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      color-mix(in oklch, var(--bg) 88%, transparent) 5%,
+      transparent 60%
+    );
+  }
+  .paese-testo {
+    position: absolute;
+    inset: auto 0 0 0;
+    z-index: 1;
+    padding: clamp(1.5rem, 5vw, 3rem) clamp(1rem, 4vw, 2.5rem);
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .paese-testo p {
+    margin: 0;
+    text-transform: uppercase;
+    line-height: 1.05;
+    font-size: clamp(1.6rem, 5vw, 3.25rem);
+    color: var(--text);
+    text-shadow: 0 2px 20px color-mix(in oklch, var(--bg) 85%, transparent);
+  }
   .news-section {
     padding: clamp(3rem, 8vw, 6rem) clamp(1rem, 4vw, 2.5rem) clamp(2rem, 6vw, 4rem);
   }

@@ -9,7 +9,12 @@
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
 
+# I frame dell'hero hanno nomi fissi (f-000.webp...), quindi "immutable" li
+# congelerebbe nel browser anche dopo una rigenerazione: e' successo davvero il
+# 27/07/2026, il sito continuava a servire i frame vecchi e un manifest scaduto.
+# Finche' i contenuti cambiano si tiene una cache breve. Alla messa online, se
+# si vuole la cache lunga, va versionata la cartella (es. /hero-frames/v2/).
 [[headers]]
   for = "/hero-frames/*"
   [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
+    Cache-Control = "public, max-age=3600, must-revalidate"

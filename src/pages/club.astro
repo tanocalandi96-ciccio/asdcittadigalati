@@ -33,9 +33,29 @@ const googleMapsUrl = "https://www.google.com/maps/search/?api=1&query=Campo+spo
           e fuori dal rettangolo di gioco.
         </p>
       </div>
+      <!-- FOTO FITTIZIA generata: sostituire con una foto d'archivio vera della societa' -->
+      <figure class="storica">
+        <img
+          src="/img/foto/storica-squadra.webp"
+          alt="Formazione storica del club schierata su un campo in terra battuta, fotografia d'epoca in bianco e nero"
+          width="1600"
+          height="1194"
+          loading="lazy"
+        />
+        <figcaption>Immagine segnaposto: qui andrà una foto d'archivio della società.</figcaption>
+      </figure>
     </section>
 
     <section class="campo">
+      <!-- FOTO FITTIZIA generata: sostituire con una foto vera del Ducezio-Parafioriti -->
+      <img
+        class="campo-foto"
+        src="/img/foto/campo-ducezio.webp"
+        alt="Il campo visto dalla recinzione: tribuna in cemento, torri faro e i monti Nebrodi sullo sfondo alla luce del tramonto"
+        width="1600"
+        height="894"
+        loading="lazy"
+      />
       <div class="inner">
         <h2 class="font-display">Il campo</h2>
         <p class="campo-nome">Ducezio-Parafioriti</p>
@@ -73,9 +93,39 @@ const googleMapsUrl = "https://www.google.com/maps/search/?api=1&query=Campo+spo
   .storia p {
     max-width: 65ch;
   }
+  /* Foto d'archivio: leggermente sfalsata e ruotata, come una stampa appoggiata
+     sul tavolo. Rompe la colonna di testo senza diventare una card. */
+  .storica {
+    max-width: 760px;
+    margin: clamp(2rem, 5vw, 3rem) auto 0;
+    padding: 0 clamp(1rem, 4vw, 2.5rem);
+    transform: rotate(-1.1deg);
+  }
+  .storica img {
+    width: 100%;
+    height: auto;
+    filter: saturate(0.9);
+  }
+  .storica figcaption {
+    font-size: 0.8rem;
+    color: var(--oro);
+    margin-top: 0.6rem;
+    text-align: right;
+  }
   .campo {
     background: var(--surface);
-    padding: clamp(2.5rem, 6vw, 4rem) clamp(1rem, 4vw, 2.5rem) clamp(3rem, 7vw, 5rem);
+    padding: 0 0 clamp(3rem, 7vw, 5rem);
+  }
+  /* Foto del campo a tutta larghezza: apre la sezione come un'inquadratura,
+     senza contenitore attorno. */
+  .campo-foto {
+    width: 100%;
+    height: clamp(220px, 38vw, 440px);
+    object-fit: cover;
+    margin-bottom: clamp(2rem, 5vw, 3rem);
+  }
+  .campo .inner {
+    padding: 0 clamp(1rem, 4vw, 2.5rem);
   }
   .campo h2 {
     font-size: clamp(1.5rem, 3.5vw, 2.25rem);

@@ -5,11 +5,11 @@ interface Props {
   post: CollectionEntry<"news">;
 }
 const { post } = Astro.props;
-const { title, date, cover } = post.data;
+const { title, date, cover, coverAlt } = post.data;
 const dateLabel = date.toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" });
 ---
 <a href={`/news/${post.id}/`} class="news-card" class:list={{ "no-cover": !cover }}>
-  {cover && <img src={cover} alt="" class="cover" />}
+  {cover && <img src={cover} alt={coverAlt ?? ""} class="cover" loading="lazy" />}
   <div class="scrim" aria-hidden="true"></div>
   <div class="content">
     <p class="date">{dateLabel}</p>

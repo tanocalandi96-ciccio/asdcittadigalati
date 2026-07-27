@@ -15,7 +15,7 @@ interface Props {
 }
 
 const { post } = Astro.props;
-const { title, date, cover } = post.data;
+const { title, date, cover, coverAlt } = post.data;
 const { Content } = await render(post);
 const dateLabel = date.toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" });
 ---
@@ -23,7 +23,7 @@ const dateLabel = date.toLocaleDateString("it-IT", { day: "numeric", month: "lon
   <main id="main" tabindex="-1">
     {cover && (
       <div class="cover-wrap">
-        <img src={cover} alt={`Copertina dell'articolo: ${title}`} class="cover" />
+        <img src={cover} alt={coverAlt ?? `Copertina dell'articolo: ${title}`} class="cover" />
       </div>
     )}
     <article class="article">

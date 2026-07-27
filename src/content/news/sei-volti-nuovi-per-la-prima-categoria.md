@@ -2,7 +2,8 @@
 # CONTENUTO FITTIZIO: sostituire con la notizia reale
 title: "Sei volti nuovi per la Prima Categoria"
 date: 2026-07-18
-cover: /img/news/cover-mercato.svg
+cover: /img/foto/spogliatoio.webp
+coverAlt: "Spogliatoio vuoto prima della partita, maglie stese sulla panca di legno"
 ---
 
 La campagna acquisti porta in giallorossoblu sei giocatori: due under promettenti dal vivaio orlandino e quattro elementi d'esperienza per la categoria.
