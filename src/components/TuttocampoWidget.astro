@@ -11,6 +11,30 @@ const { type, title } = Astro.props;
 
 const widgetUrl = WIDGET_URLS[type];
 
+// Un widget senza dati (campionato non iniziato) restituisce una sola frase,
+// alta 120px, che dentro un riquadro da 600px galleggia nel vuoto. Peggio: e'
+// il messaggio di Tuttocampo, non il nostro. Quindi al momento della
+// compilazione si chiede al widget se ha dati: se e' vuoto si mostra il testo
+// d'attesa del sito, curato e coerente; se ha dati si mostra il widget vero.
+//
+// Conseguenza da conoscere: quando il campionato parte, il passaggio avviene
+// alla prima ricompilazione del sito, non nell'istante esatto. Basta una
+// pubblicazione dal pannello, o una ricompilazione programmata su Netlify.
+async function haDati(url: string): Promise<boolean> {
+  try {
+    const risposta = await fetch(url, { signal: AbortSignal.timeout(5000) });
+    if (!risposta.ok) return true; // in dubbio si mostra il widget
+    const testo = (await risposta.text()).replace(/<[^>]+>/g, " ");
+    return !/non ancora (?:disponibil|present)/i.test(testo);
+  } catch {
+    // Rete assente o Tuttocampo irraggiungibile durante la compilazione: si
+    // mostra il widget, che a quel punto gestisce da solo il proprio stato.
+    return true;
+  }
+}
+
+const widgetAttivo = widgetUrl ? await haDati(widgetUrl) : false;
+
 const FALLBACK_COPY: Record<WidgetType, { kicker: string; testo: string }> = {
   classifica: {
     kicker: "Classifica non ancora disponibile",
@@ -42,12 +66,14 @@ const { kicker, testo } = FALLBACK_COPY[type];
 
 // Altezze consigliate da Tuttocampo per ciascun widget: la classifica di un
 // girone ha molte righe, il box della prossima partita e' compatto.
+// Misurate sul contenuto vero servito da Tuttocampo, non stimate: la
+// classifica del girone (15 squadre) occupa 669px.
 const MIN_HEIGHT: Record<WidgetType, string> = {
-  classifica: "800px",
+  classifica: "700px",
   risultati: "600px",
-  marcatori: "700px",
-  partita: "400px",
-  prossimaPartita: "400px",
+  marcatori: "620px",
+  partita: "380px",
+  prossimaPartita: "380px",
 };
 
 const boxId = `widget-box-${type}`;
@@ -55,7 +81,7 @@ const iframeId = `tuttocampo-widget-${type}`;
 const fallbackId = `widget-fallback-${type}`;
 ---
 <div class="tuttocampo-widget" style={{ "--widget-min-height": MIN_HEIGHT[type] }}>
-  {widgetUrl ? (
+  {widgetAttivo ? (
     <>
       <div class="widget-box" id={boxId}>
         <EmbedConsenso
