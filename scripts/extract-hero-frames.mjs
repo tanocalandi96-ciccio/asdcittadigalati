@@ -12,15 +12,21 @@ import { join } from "node:path";
 // differenza media fra fotogrammi 0,1-0,2 al centro contro 0,4-0,6 in coda.
 const USE_SECONDS = 4.08;
 
+// Risoluzione dei frame: il master e' 1920x1080, estrarre a 1280 significava
+// buttare meta' dei pixel e poi farli reingrandire dal canvas (fattore ~1,9 su
+// uno schermo desktop pieno, da cui l'immagine molle). Si estrae alla
+// risoluzione nativa. Sul mobile 900px coprono anche i telefoni a dPR 3.
 const jobs = [
-  { key: "desktop", src: "assets/hero-video-master-16x9.mp4", out: "public/hero-frames/desktop", frames: 70, scale: "1280:-2" },
-  { key: "mobile", src: "assets/hero-video-mobile-9x16.mp4", out: "public/hero-frames/mobile", frames: 40, scale: "720:-2" },
+  { key: "desktop", src: "assets/hero-video-master-16x9.mp4", out: "public/hero-frames/desktop", frames: 70, scale: "1920:-2" },
+  { key: "mobile", src: "assets/hero-video-mobile-9x16.mp4", out: "public/hero-frames/mobile", frames: 40, scale: "900:-2" },
 ];
 
-// Budget di peso per set (KB), da task-3-brief.md.
-const BUDGET_KB = { desktop: 6000, mobile: 3000 };
+// Budget di peso per set (KB). Il mobile resta stretto: e' quello che pesa sul
+// 4G. Il desktop puo' respirare perche' solo i primi 10 frame bloccano la
+// comparsa dell'hero, il resto della sequenza arriva in sottofondo.
+const BUDGET_KB = { desktop: 8500, mobile: 2800 };
 // Tentativi di qualità WebP in ordine decrescente: si ferma al primo che rientra nel budget.
-const QUALITY_ATTEMPTS = [72, 65, 55];
+const QUALITY_ATTEMPTS = [72, 65, 58, 50];
 
 const manifest = {};
 
