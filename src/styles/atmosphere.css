@@ -20,7 +20,10 @@
       animation-fill-mode: both;
       animation-timing-function: ease-out;
       animation-timeline: view();
-      animation-range: entry 0% entry 70%;
+      /* Il reveal si completa quando il titolo e' salito a ~1/3 del viewport:
+         con "entry 0% entry 70%" finiva sul bordo inferiore dello schermo,
+         dove nessuno guarda, e l'effetto risultava invisibile. */
+      animation-range: entry 0% cover 30%;
     }
   }
 }
@@ -62,9 +65,12 @@ main h2.reveal-js.reveal-on {
     inset: 0;
     pointer-events: none;
     z-index: 1;
+    /* Centri a bordo schermo (non fuori) e code che scendono sotto la barra
+       di navigazione: prima il grosso del bagliore era coperto dall'header
+       opaco o tagliato fuori dal viewport. */
     background:
-      radial-gradient(52rem 34rem at -8% -12%, oklch(0.75 0.14 65 / 0.22), transparent 68%),
-      radial-gradient(52rem 34rem at 108% -12%, oklch(0.75 0.14 65 / 0.18), transparent 68%);
+      radial-gradient(60rem 42rem at 0% -4%, oklch(0.75 0.14 65 / 0.32), transparent 70%),
+      radial-gradient(60rem 42rem at 100% -4%, oklch(0.75 0.14 65 / 0.26), transparent 70%);
     animation: floodlight-breathe 7s ease-in-out infinite alternate;
   }
 }
@@ -85,7 +91,7 @@ main h2.reveal-js.reveal-on {
     height: 13rem;
     pointer-events: none;
     z-index: 1;
-    background: linear-gradient(to top, oklch(0.42 0.04 265 / 0.3), transparent);
+    background: linear-gradient(to top, oklch(0.45 0.05 265 / 0.38), transparent);
     filter: blur(16px);
     animation: fog-drift 22s ease-in-out infinite alternate;
   }
