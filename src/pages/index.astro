@@ -11,7 +11,7 @@ const news = (await getCollection("news"))
   .slice(0, 3);
 ---
 <Base title="Home">
-  <main>
+  <main id="main" tabindex="-1">
     <Hero />
 
     <section class="news-section" aria-labelledby="news-title">

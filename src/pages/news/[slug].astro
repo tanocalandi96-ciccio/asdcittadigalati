@@ -20,7 +20,7 @@ const { Content } = await render(post);
 const dateLabel = date.toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" });
 ---
 <Base title={title} description={`Notizia: ${title}`}>
-  <main>
+  <main id="main" tabindex="-1">
     {cover && (
       <div class="cover-wrap">
         <img src={cover} alt={`Copertina dell'articolo: ${title}`} class="cover" />

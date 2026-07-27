@@ -37,6 +37,7 @@ const ogImage = new URL("/img/og.jpg", Astro.site ?? Astro.url).href;
     <meta name="twitter:image" content={ogImage} />
   </head>
   <body>
+    <a href="#main" class="skip-link">Salta al contenuto</a>
     <Header />
     <slot />
     <Footer />
@@ -44,3 +45,26 @@ const ogImage = new URL("/img/og.jpg", Astro.site ?? Astro.url).href;
     <BallCursor />
   </body>
 </html>
+<style>
+  .skip-link {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    padding: 0.75rem 1.25rem;
+    background: var(--giallo);
+    color: var(--bg);
+    font-family: var(--font-display);
+    text-decoration: none;
+    transform: translateY(-110%);
+    transition: transform 0.2s var(--ease-out-quart);
+  }
+  .skip-link:focus {
+    transform: translateY(0);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .skip-link {
+      transition: none;
+    }
+  }
+</style>
