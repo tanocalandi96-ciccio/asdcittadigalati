@@ -15,6 +15,10 @@ import Scoreboard from "../components/Scoreboard.astro";
       </div>
     </section>
 
+    <div class="banda" aria-hidden="true">
+      <img src="/img/ambiente/tabellone.webp" alt="" width="1800" height="764" loading="lazy" />
+    </div>
+
     <Scoreboard />
 
     <section class="widget-section classifica" aria-labelledby="classifica-title">
@@ -63,6 +67,30 @@ import Scoreboard from "../components/Scoreboard.astro";
   .kicker {
     color: var(--oro);
     max-width: 55ch;
+  }
+  /* Fascia d'ambiente: immagine generica e definitiva, non un segnaposto.
+     In queste pagine una foto della squadra non ha senso (vedi
+     public/img/LEGGIMI.md). */
+  .banda {
+    position: relative;
+    height: clamp(140px, 22vw, 260px);
+    overflow: hidden;
+  }
+  .banda img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .banda::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      color-mix(in oklch, var(--bg) 55%, transparent),
+      var(--bg)
+    );
   }
   .widget-section {
     background: var(--surface);

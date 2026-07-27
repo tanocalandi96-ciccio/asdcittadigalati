@@ -10,6 +10,10 @@ import Base from "../layouts/Base.astro";
       </div>
     </section>
 
+    <div class="banda" aria-hidden="true">
+      <img src="/img/ambiente/ingresso.webp" alt="" width="1800" height="764" loading="lazy" />
+    </div>
+
     <section class="contatti-section">
       <div class="inner grid">
         <!-- action: dopo l'invio si resta dentro il sito invece di finire
@@ -79,6 +83,30 @@ import Base from "../layouts/Base.astro";
   .kicker {
     color: var(--oro);
     max-width: 55ch;
+  }
+  /* Fascia d'ambiente: immagine generica e definitiva, non un segnaposto.
+     In queste pagine una foto della squadra non ha senso (vedi
+     public/img/LEGGIMI.md). */
+  .banda {
+    position: relative;
+    height: clamp(140px, 22vw, 260px);
+    overflow: hidden;
+  }
+  .banda img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .banda::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      color-mix(in oklch, var(--bg) 55%, transparent),
+      var(--bg)
+    );
   }
   .contatti-section {
     padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1rem, 4vw, 2.5rem) clamp(3rem, 8vw, 6rem);

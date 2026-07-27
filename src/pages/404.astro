@@ -15,6 +15,9 @@ const scorciatoie = [
   description="La pagina cercata non esiste o è stata spostata"
 >
   <main id="main" tabindex="-1" class="notfound">
+    <!-- Immagine generica e definitiva (public/img/LEGGIMI.md): un pallone
+         finito fuori dal campo, che è esattamente ciò che è successo. -->
+    <img class="sfondo" src="/img/ambiente/palla-fuori.webp" alt="" aria-hidden="true" width="1800" height="1005" />
     <div class="inner">
       <p class="codice font-display" aria-hidden="true">404</p>
       <h1 class="font-display">Palla fuori</h1>
@@ -34,12 +37,37 @@ const scorciatoie = [
 
 <style>
   .notfound {
+    position: relative;
+    isolation: isolate;
     min-height: 60vh;
     display: flex;
     align-items: center;
     padding: clamp(3rem, 8vw, 6rem) clamp(1rem, 4vw, 2.5rem);
+    overflow: hidden;
   }
-  .inner { max-width: 640px; margin: 0 auto; }
+  /* L'immagine sta sotto al testo, scurita quanto basta perché il contrasto
+     resti pieno: il testo non deve mai combattere con la foto. */
+  .sfondo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -2;
+  }
+  .notfound::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(
+      to right,
+      var(--bg) 0%,
+      color-mix(in oklch, var(--bg) 88%, transparent) 45%,
+      color-mix(in oklch, var(--bg) 55%, transparent) 100%
+    );
+  }
+  .inner { max-width: 640px; margin: 0 auto; position: relative; }
   /* Numero grande come un tabellone, non come un titolo. */
   .codice {
     font-size: clamp(4.5rem, 18vw, 9rem);

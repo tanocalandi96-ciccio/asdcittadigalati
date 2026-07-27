@@ -33,6 +33,10 @@ const titolo = page.currentPage > 1 ? `News, pagina ${page.currentPage}` : "News
             : "Tutte le notizie del club"}
         </p>
 
+        <div class="banda" aria-hidden="true">
+          <img src="/img/ambiente/taccuino.webp" alt="" width="1800" height="764" loading="lazy" />
+        </div>
+
         {page.data.length > 0 ? (
           <div class="news-grid">
             {page.data.map((post) => <NewsCard post={post} />)}
@@ -75,6 +79,31 @@ const titolo = page.currentPage > 1 ? `News, pagina ${page.currentPage}` : "News
   .kicker {
     color: var(--oro);
     margin: 0 0 2rem;
+  }
+  /* Fascia d'ambiente: immagine generica e definitiva, non un segnaposto.
+     In queste pagine una foto della squadra non ha senso (vedi
+     public/img/LEGGIMI.md). */
+  .banda {
+    position: relative;
+    margin-bottom: 2rem;
+    height: clamp(140px, 22vw, 260px);
+    overflow: hidden;
+  }
+  .banda img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .banda::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      color-mix(in oklch, var(--bg) 55%, transparent),
+      var(--bg)
+    );
   }
   .news-grid {
     display: grid;
