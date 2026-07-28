@@ -7,7 +7,7 @@
 # DA COMPILARE alla creazione del repository: sostituire UTENTE/REPOSITORY.
 backend:
   name: github
-  repo: UTENTE/REPOSITORY
+  repo: tanocalandi96-ciccio/asdcittadigalati
   branch: main
 
 # Backend locale per le prove in sviluppo: decommentare e lanciare
@@ -128,3 +128,28 @@ collections:
               - { label: "Anno", name: "anno", widget: "string", hint: "Anche un periodo, es. 2018-2024." }
               - { label: "Titolo", name: "titolo", widget: "string" }
               - { label: "Testo", name: "testo", widget: "text" }
+
+      - name: "diretta"
+        label: "Diretta della partita"
+        file: "src/data/diretta.json"
+        description: "Attiva il riquadro con il conto alla rovescia in home. Ricordarsi di disattivarlo a partita finita."
+        fields:
+          - label: "Mostra il riquadro"
+            name: "attiva"
+            widget: "boolean"
+            default: false
+            hint: "Spegnere a partita finita, altrimenti il riquadro resta in home."
+          - label: "Titolo"
+            name: "titolo"
+            widget: "string"
+            required: false
+            hint: "Per esempio: Citta di Galati - Aluntina."
+          - label: "Ora del fischio d'inizio"
+            name: "inizio"
+            widget: "datetime"
+            hint: "Il conto alla rovescia parte da solo. All'ora indicata il riquadro passa alla diretta."
+          - label: "Link della diretta Facebook"
+            name: "urlVideo"
+            widget: "string"
+            required: false
+            hint: "Si incolla quando la diretta e' partita. Senza link, il riquadro invita a seguire la partita sulla pagina Facebook."

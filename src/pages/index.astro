@@ -7,6 +7,7 @@ import NextMatch from "../components/NextMatch.astro";
 import SponsorStrip from "../components/SponsorStrip.astro";
 import KineticRibbon from "../components/KineticRibbon.astro";
 import societa from "../data/societa.json";
+import DirettaLive from "../components/DirettaLive.astro";
 
 const news = (await getCollection("news"))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
@@ -18,6 +19,8 @@ const righeClaim = societa.claimHome.split(/\r?\n/).filter(Boolean);
 <Base title="Home">
   <main id="main" tabindex="-1">
     <Hero />
+
+    <DirettaLive />
 
     <section class="news-section" aria-labelledby="news-title">
       <div class="section-inner">

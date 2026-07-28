@@ -1,0 +1,191 @@
+---
+// Riquadro della diretta: conto alla rovescia prima del fischio d'inizio,
+// video di Facebook durante la partita.
+//
+// Perche' il passaggio fra i due stati avviene nel browser e non al momento
+// della compilazione: il sito e' statico, quindi se il conto alla rovescia
+// dipendesse dalla compilazione resterebbe fermo all'ora in cui e' stato
+// pubblicato. Cosi' invece basta che qualcuno attivi la diretta dal pannello
+// una volta, e il riquadro si trasforma da solo all'ora giusta.
+import diretta from "../data/diretta.json";
+import EmbedConsenso from "./EmbedConsenso.astro";
+
+const attiva = Boolean(diretta.attiva && diretta.inizio);
+const urlVideo = diretta.urlVideo?.trim() ?? "";
+
+// Indirizzo del riproduttore di Facebook: accetta il link del video cosi'
+// com'e', purche' sia pubblico.
+const srcVideo = urlVideo
+  ? `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(urlVideo)}&show_text=false&width=800`
+  : "";
+---
+{attiva && (
+  <section class="diretta" data-diretta data-inizio={diretta.inizio} aria-labelledby="diretta-title">
+    <div class="inner">
+      <p class="etichetta font-display" data-etichetta>
+        <span class="pallino" aria-hidden="true"></span>
+        <span data-etichetta-testo>Prossima diretta</span>
+      </p>
+
+      <h2 id="diretta-title" class="font-display">
+        {diretta.titolo || "Diretta dal campo"}
+      </h2>
+
+      {/* Prima del fischio d'inizio */}
+      <div class="attesa" data-attesa>
+        <p class="conto font-display" data-conto aria-live="off">
+          <span class="sr-only">Mancano </span>
+        </p>
+        <p class="quando" data-quando></p>
+      </div>
+
+      {/* Dal fischio d'inizio in poi */}
+      <div class="live" data-live hidden>
+        {srcVideo ? (
+          <EmbedConsenso
+            src={srcVideo}
+            title={`Diretta: ${diretta.titolo || "partita"}`}
+            servizio="Facebook"
+            altezza="460px"
+            nota="La diretta è trasmessa da Facebook: per vederla qui il browser deve collegarsi ai loro server, che possono impostare cookie propri."
+          />
+        ) : (
+          <p class="senza-video">
+            La diretta è in partenza sulla pagina Facebook della società.
+          </p>
+        )}
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  .diretta {
+    background: color-mix(in oklch, var(--rosso) 12%, var(--surface));
+    border-top: 2px solid var(--rosso);
+    border-bottom: 2px solid var(--rosso);
+    padding: clamp(2rem, 5vw, 3rem) clamp(1rem, 4vw, 2.5rem);
+  }
+  .inner { max-width: 900px; margin: 0 auto; text-align: center; }
+
+  .etichetta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 0.5rem;
+    font-size: 0.85rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--rosso);
+  }
+  .pallino {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--rosso);
+  }
+  /* Il pallino pulsa solo quando si e' davvero in onda: prima sarebbe una
+     bugia visiva. */
+  .diretta.in-onda .pallino {
+    box-shadow: 0 0 10px var(--rosso);
+    animation: pulsa 1.6s ease-in-out infinite;
+  }
+  @keyframes pulsa {
+    0%, 100% { opacity: 0.35; }
+    50% { opacity: 1; }
+  }
+
+  .diretta h2 {
+    font-size: clamp(1.4rem, 3.5vw, 2.1rem);
+    margin: 0 0 1.25rem;
+  }
+  .conto {
+    font-size: clamp(2rem, 7vw, 3.4rem);
+    line-height: 1;
+    margin: 0;
+    color: var(--giallo);
+    font-variant-numeric: tabular-nums;
+  }
+  .quando {
+    margin: 0.6rem 0 0;
+    font-size: 0.9rem;
+    color: color-mix(in oklch, var(--text) 78%, transparent);
+  }
+  .senza-video { margin: 0; }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .diretta.in-onda .pallino { animation: none; opacity: 1; }
+  }
+</style>
+
+<script>
+  const box = document.querySelector<HTMLElement>("[data-diretta]");
+  if (box) {
+    const inizio = new Date(box.dataset.inizio ?? "");
+    const attesa = box.querySelector<HTMLElement>("[data-attesa]");
+    const live = box.querySelector<HTMLElement>("[data-live]");
+    const conto = box.querySelector<HTMLElement>("[data-conto]");
+    const quando = box.querySelector<HTMLElement>("[data-quando]");
+    const etichetta = box.querySelector<HTMLElement>("[data-etichetta-testo]");
+
+    if (Number.isNaN(inizio.getTime())) {
+      // Data non valida inserita dal pannello: meglio nascondere tutto che
+      // mostrare "NaN" a un tifoso.
+      box.hidden = true;
+    } else {
+      if (quando) {
+        quando.textContent = `Fischio d'inizio ${inizio.toLocaleString("it-IT", {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          hour: "2-digit",
+          minute: "2-digit",
+        })}`;
+      }
+
+      const vaiInOnda = () => {
+        box.classList.add("in-onda");
+        if (etichetta) etichetta.textContent = "In diretta ora";
+        if (attesa) attesa.hidden = true;
+        if (live) live.hidden = false;
+      };
+
+      const aggiorna = () => {
+        const mancano = inizio.getTime() - Date.now();
+        if (mancano <= 0) {
+          vaiInOnda();
+          return false; // niente piu' aggiornamenti
+        }
+        const s = Math.floor(mancano / 1000);
+        const g = Math.floor(s / 86400);
+        const o = Math.floor((s % 86400) / 3600);
+        const m = Math.floor((s % 3600) / 60);
+        const sec = s % 60;
+        if (conto) {
+          conto.textContent =
+            g > 0
+              ? `${g}g ${o}h ${m}m`
+              : `${String(o).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
+        }
+        return true;
+      };
+
+      if (aggiorna()) {
+        // Sotto l'ora si aggiorna al secondo, sopra basta il minuto: un
+        // conto alla rovescia di tre giorni non ha bisogno di 86.400 tick.
+        const lontano = inizio.getTime() - Date.now() > 3600_000;
+        const timer = setInterval(() => {
+          if (!aggiorna()) clearInterval(timer);
+        }, lontano ? 30_000 : 1000);
+      }
+    }
+  }
+</script>
