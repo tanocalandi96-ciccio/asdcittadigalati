@@ -101,64 +101,53 @@ caricamento sì.
 
 ### 2.1 Deploy su Netlify e accesso al pannello
 
-Il repository oggi è locale, sul branch `feat/sito-v1`, senza remote.
-
 **Perché GitHub è obbligatorio e non un dettaglio**: il pannello `/admin` salva
 i contenuti facendo commit sul repository. Senza repository il pannello non
 funziona e la società non è autonoma.
 
-#### Passi
+#### Com'è messo oggi (28/07/2026)
 
-1. **Creare il repository su GitHub.** Può essere privato: il sito pubblicato
-   resta pubblico comunque, il codice no. Poi in locale:
-   ```bash
-   git remote add origin https://github.com/UTENTE/REPOSITORY.git
-   git checkout main && git merge feat/sito-v1
-   git push -u origin main
-   ```
+| Pezzo | Valore |
+|---|---|
+| Repository | `tanocalandi96-ciccio/asdcittadigalati`, branch `main`, **pubblico** |
+| Sito | `citta-di-galati-anteprima.netlify.app` (account Netlify `elevadigitalgc`) |
+| Build | automatica a ogni push; comando e cartella li legge da `netlify.toml` |
+| Accesso al pannello | applicazione OAuth GitHub + due funzioni del sito (`netlify/functions/auth.mjs`, `callback.mjs`) |
+| Variabili sul sito | `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` (quest'ultima marcata come segreta; entrambe devono avere lo scope *functions*) |
 
-2. **Scrivere il nome del repository nel pannello.** In
-   `public/admin/config.yml`, sostituire il segnaposto:
-   ```yaml
-   backend:
-     name: github
-     repo: UTENTE/REPOSITORY   # <- qui
-     branch: main
-   ```
-   Senza questo il pannello mostra la schermata di accesso ma non trova nulla.
+Resta da fare solo il punto 4 qui sotto.
 
-3. **Autorizzare l'accesso a GitHub.** Sveltia CMS ha bisogno di un
-   intermediario che gestisca il login OAuth. Due strade:
-   - **Semplice**: ogni redattore entra con *Sign In with GitHub Using Token*,
-     incollando un token personale creato su GitHub (Settings → Developer
-     settings → Personal access tokens → Fine-grained, accesso al solo
-     repository del sito). Nessun servizio da installare.
-   - **Più comoda per chi la usa**: pubblicare `sveltia-cms-auth`, un piccolo
-     servizio gratuito su Cloudflare Workers, che abilita il pulsante
-     *Sign In with GitHub* senza token. Mezz'ora di configurazione una tantum.
+#### Perché il repository è pubblico e non deve tornare privato
 
-   Con una sola persona a gestire i contenuti, la prima strada basta.
+Sul piano gratuito Netlify **rifiuta di compilare un repository privato se
+l'autore del commit non è un membro verificato dell'account**
+(*"Build blocked: Unrecognized Git contributor"*). Il pannello firma i commit
+con l'account GitHub di chi sta scrivendo: con il repository privato, ogni
+articolo pubblicato dalla società bloccherebbe la pubblicazione del sito.
+Succede davvero, verificato il 28/07/2026 sul deploy `0f0c2d5`.
 
-4. **Invitare il redattore.** Sul repository GitHub: Settings → Collaborators
+Le alternative sono: piano Netlify a pagamento (~19 $/mese a postazione) oppure
+compilare su GitHub Actions e caricare su Netlify il sito già pronto. Per un ASD
+non hanno senso: il repository non contiene segreti (le chiavi stanno solo fra
+le variabili d'ambiente di Netlify) e il sito è pubblico comunque.
+
+Effetto collaterale positivo: il permesso chiesto a chi entra nel pannello è
+`public_repo` invece di `repo`, cioè **non** dà accesso agli altri repository
+privati di quell'account GitHub.
+
+#### Quel che resta da fare
+
+1. **Invitare il redattore.** Sul repository GitHub: Settings → Collaborators
    → Add people. Serve il suo nome utente GitHub. Deve accettare l'invito che
-   riceve via email.
+   riceve via email. Con repository pubblico l'invito serve comunque: senza,
+   può leggere ma non salvare.
 
-5. **Creare il sito su Netlify**: "Add new site" → "Import an existing
-   project" → selezionare il repository.
+2. **Consegnare la guida**: `docs/Guida-pannello-Citta-di-Galati.pdf` è scritta
+   per il volontario, non per chi sviluppa. Stampala o mandagliela.
 
-6. **Build settings**: Netlify legge `netlify.toml` (già presente):
-   ```toml
-   [build]
-     command = "npm run build"
-     publish = "dist"
-   ```
-
-7. **Versione di Node**: `package.json` richiede Node >= 22.12. Su Site
-   settings → Environment variables aggiungere `NODE_VERSION` = `22`,
-   altrimenti la build può fallire.
-
-8. **Consegnare la guida**: `docs/GUIDA-PANNELLO.md` è scritta per il
-   volontario, non per chi sviluppa. Stampala o mandagliela.
+3. **Al dominio definitivo**: aggiornare `base_url` in `public/admin/config.yml`
+   e l'*Authorization callback URL* dell'applicazione OAuth su GitHub. Se
+   restano puntati a `netlify.app`, l'accesso al pannello smette di funzionare.
 
 #### Provare il pannello senza repository (modalità locale)
 

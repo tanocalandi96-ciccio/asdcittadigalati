@@ -26,9 +26,10 @@ export default async (request) => {
   const destinazione = new URL("https://github.com/login/oauth/authorize");
   destinazione.searchParams.set("client_id", clientId);
   destinazione.searchParams.set("redirect_uri", `${url.origin}/callback`);
-  // "repo" serve perche' il pannello scrive i contenuti nel repository, che e'
-  // privato. Con un repository pubblico basterebbe "public_repo".
-  destinazione.searchParams.set("scope", "repo,user");
+  // Il repository e' pubblico, quindi basta "public_repo": il permesso vale
+  // solo per i repository pubblici. Con "repo" il pannello riceverebbe la
+  // chiave di TUTTI i repository privati di chi entra, che non serve a nulla.
+  destinazione.searchParams.set("scope", "public_repo,user");
   destinazione.searchParams.set("state", state);
 
   return new Response(null, {
