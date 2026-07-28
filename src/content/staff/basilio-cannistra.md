@@ -1,6 +1,5 @@
 ---
-# DATO FITTIZIO: sostituire con lo staff reale
-nome: Basilio Cannistrà
+nome: daniele
 incarico: Preparatore dei portieri
 ordine: 3
 ---
