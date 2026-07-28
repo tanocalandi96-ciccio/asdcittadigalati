@@ -1,0 +1,43 @@
+// Primo passo dell'accesso al pannello: manda l'utente su GitHub a dare il
+// consenso.
+//
+// Perche' esiste: il pannello non puo' parlare direttamente con GitHub, perche'
+// lo scambio finale richiede un segreto che non puo' stare dentro una pagina
+// web (chiunque lo leggerebbe). Serve quindi un pezzo lato server. Invece di
+// installare un servizio esterno lo ospitiamo qui: stesso dominio, nessun
+// account in piu', niente da rinnovare.
+
+export default async (request) => {
+  const url = new URL(request.url);
+  const clientId = process.env.GITHUB_CLIENT_ID;
+
+  if (!clientId) {
+    return new Response(
+      "Accesso non configurato: manca GITHUB_CLIENT_ID fra le variabili d'ambiente del sito.",
+      { status: 500, headers: { "content-type": "text/plain; charset=utf-8" } }
+    );
+  }
+
+  // Valore casuale legato alla sessione: al ritorno da GitHub verifichiamo che
+  // sia lo stesso. Senza, un altro sito potrebbe far completare l'accesso a
+  // un utente ignaro (CSRF).
+  const state = crypto.randomUUID();
+
+  const destinazione = new URL("https://github.com/login/oauth/authorize");
+  destinazione.searchParams.set("client_id", clientId);
+  destinazione.searchParams.set("redirect_uri", `${url.origin}/callback`);
+  // "repo" serve perche' il pannello scrive i contenuti nel repository, che e'
+  // privato. Con un repository pubblico basterebbe "public_repo".
+  destinazione.searchParams.set("scope", "repo,user");
+  destinazione.searchParams.set("state", state);
+
+  return new Response(null, {
+    status: 302,
+    headers: {
+      location: destinazione.toString(),
+      "set-cookie": `cms_state=${state}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=600`,
+    },
+  });
+};
+
+export const config = { path: "/auth" };
