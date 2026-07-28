@@ -2,6 +2,12 @@
   command = "npm run build"
   publish = "dist"
 
+# package.json richiede Node >= 22.12. Netlify usa una versione predefinita
+# che puo' essere piu' vecchia: senza questa riga il primo build automatico
+# fallisce, e la causa non e' evidente dal messaggio d'errore.
+[build.environment]
+  NODE_VERSION = "22"
+
 # ANTEPRIMA: nessuna indicizzazione finche' i contenuti sono fittizi.
 # Rimuovere questo blocco (e sistemare public/robots.txt) alla messa online.
 [[headers]]
