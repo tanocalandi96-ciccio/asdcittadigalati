@@ -83,12 +83,19 @@ collections:
         widget: "select"
         required: true
         options: ["main", "tecnico", "partner"]
-      - { label: "Logo", name: "logo", widget: "image", required: true, media_folder: "/img/uploads", public_folder: "/img/uploads" }
-      - label: "Sito web"
+      - label: "Logo"
+        name: "logo"
+        widget: "image"
+        required: true
+        hint: "Se qui sotto metti il sito dello sponsor, il logo diventa cliccabile."
+        media_folder: "/img/uploads"
+        public_folder: "/img/uploads"
+      - label: "Sito web (o pagina Facebook)"
         name: "url"
         widget: "string"
         required: false
-        pattern: ["^https?://\\S+$", "Deve essere un URL valido (es. https://esempio.it)"]
+        hint: "Chi clicca il logo finisce qui, in una scheda nuova. Incolla l'indirizzo completo, da https:// in poi. Lascia vuoto se lo sponsor non ha un sito: il logo resta mostrato, semplicemente non si clicca."
+        pattern: ["^https?://\\S+$", "Deve iniziare con https:// (esempio: https://www.esempio.it)"]
 
   # ------------------------------------------------------------------
   # Testi delle pagine: prima erano scritti nel codice e per cambiarli

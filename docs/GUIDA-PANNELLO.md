@@ -59,6 +59,12 @@ e sito internet se ce l'ha.
 Il livello decide quanto grande appare il logo nella striscia in fondo alla
 home: *main* è il più grande.
 
+Se compili **Sito web**, il logo diventa cliccabile e porta lì (in una scheda
+nuova, così chi guarda non perde il sito della squadra). Va incollato
+l'indirizzo intero, da `https://` in poi; va bene anche una pagina Facebook. Se
+lo sponsor non ha niente, lascia vuoto: il logo si vede lo stesso, solo non si
+clicca.
+
 ---
 
 ## Dati della società
