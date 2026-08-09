@@ -8,12 +8,12 @@ import TuttocampoWidget from "./TuttocampoWidget.astro";
     <h2 id="match-strip-title" class="visually-hidden">Partite</h2>
 
     <div class="coppia">
-      <div class="riquadro">
+      <div class="riquadro" data-reveal>
         <h3 class="font-display">Ultima partita</h3>
         <TuttocampoWidget type="partita" title="Ultima partita giocata - widget Tuttocampo" />
       </div>
 
-      <div class="riquadro">
+      <div class="riquadro" data-reveal>
         <h3 class="font-display">Prossima partita</h3>
         <TuttocampoWidget type="prossimaPartita" title="Prossima partita - widget Tuttocampo" />
       </div>
@@ -41,6 +41,68 @@ import TuttocampoWidget from "./TuttocampoWidget.astro";
     display: grid;
     grid-template-columns: 1fr;
     gap: clamp(2rem, 5vw, 3rem);
+    /* Da' profondita' all'ingresso dei tabelloni: senza prospettiva il
+       rotateY qui sotto sarebbe solo uno schiacciamento orizzontale. */
+    perspective: 1200px;
+  }
+
+  /* Ingresso dal tunnel: i due tabelloni scivolano dai lati opposti e si
+     assestano di piatto, legati allo scroll. Stesse avvertenze dei titoli
+     (vedi atmosphere.css): SOLO proprieta' animation-* estese, il minificatore
+     fonde la scorciatoia con animation-timeline e il browser scarta tutto. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .riquadro {
+        animation-name: tunnel-sx;
+        animation-duration: 1s;
+        animation-fill-mode: both;
+        animation-timing-function: var(--ease-out-quart);
+        animation-timeline: view();
+        animation-range: entry 0% cover 30%;
+      }
+      .riquadro:last-child {
+        animation-name: tunnel-dx;
+      }
+    }
+  }
+
+  @keyframes tunnel-sx {
+    from {
+      opacity: 0;
+      transform: translateX(-3.5rem) rotateY(16deg);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes tunnel-dx {
+    from {
+      opacity: 0;
+      transform: translateX(3.5rem) rotateY(-16deg);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* Ripiego senza animation-timeline: lo script in Base.astro marca gli
+     elementi [data-reveal] e accende .reveal-on via IntersectionObserver. */
+  .riquadro.reveal-js {
+    opacity: 0;
+    transform: translateX(-3.5rem) rotateY(16deg);
+    transition:
+      opacity 0.9s var(--ease-out-quart),
+      transform 0.9s var(--ease-out-quart);
+  }
+  .riquadro:last-child.reveal-js {
+    transform: translateX(3.5rem) rotateY(-16deg);
+    transition-delay: 0.12s;
+  }
+  .riquadro.reveal-on {
+    opacity: 1;
+    transform: none;
   }
   /* Affiancate solo quando c'e' spazio vero: sotto i 860px due tabellini
      stretti diventano illeggibili. */

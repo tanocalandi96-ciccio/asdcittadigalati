@@ -14,7 +14,13 @@ const news = (await getCollection("news"))
   .slice(0, 3);
 
 // Il claim si scrive dal pannello su piu' righe: ogni riga diventa un a capo.
+// Ogni riga viene spezzata in parole gia' qui, in build: servono al coro
+// (entrata sfalsata parola per parola) senza toccare il DOM a runtime.
 const righeClaim = societa.claimHome.split(/\r?\n/).filter(Boolean);
+let indiceParola = 0;
+const claimParole = righeClaim.map((riga) =>
+  riga.split(/\s+/).filter(Boolean).map((parola) => ({ parola, i: indiceParola++ }))
+);
 ---
 <Base title="Home">
   <main id="main" tabindex="-1">
@@ -44,9 +50,13 @@ const righeClaim = societa.claimHome.split(/\r?\n/).filter(Boolean);
         loading="lazy"
       />
       <div class="paese-testo">
-        <p id="paese-claim" class="font-display">
-          {righeClaim.map((riga, i) => (
-            <>{i > 0 && <br />}{riga}</>
+        <p id="paese-claim" class="font-display" data-coro>
+          {claimParole.map((riga) => (
+            <span class="linea">
+              {riga.map(({ parola, i }) => (
+                <><span class="parola" style={`--i: ${i}`}>{parola}</span>{" "}</>
+              ))}
+            </span>
           ))}
         </p>
       </div>
@@ -63,12 +73,77 @@ const righeClaim = societa.claimHome.split(/\r?\n/).filter(Boolean);
   .paese {
     position: relative;
     isolation: isolate;
+    overflow: hidden; /* contiene la foto ingrandita dal parallax */
   }
   .paese img {
     width: 100%;
     height: clamp(280px, 46vw, 560px);
     object-fit: cover;
     display: block;
+  }
+
+  /* Parallax + accensione: scendendo la pagina la foto scorre piano in senso
+     opposto e le torri faro "si accendono" (da quasi spente a piena luce).
+     Legato allo scroll con view(); dove manca resta la foto normale.
+     SOLO proprieta' animation-* estese: il minificatore fonde la scorciatoia
+     con animation-timeline e il browser scarta tutto (vedi atmosphere.css). */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .paese img {
+        animation-name: paese-accensione;
+        animation-duration: 1s;
+        animation-fill-mode: both;
+        animation-timing-function: linear;
+        animation-timeline: view();
+        animation-range: cover 0% cover 100%;
+      }
+    }
+  }
+  @keyframes paese-accensione {
+    from {
+      transform: translateY(-5%) scale(1.12);
+      filter: brightness(0.45) saturate(0.85);
+    }
+    45% {
+      filter: brightness(1) saturate(1);
+    }
+    to {
+      transform: translateY(5%) scale(1.12);
+      filter: brightness(1.06) saturate(1);
+    }
+  }
+
+  /* Coro del claim: le parole entrano una alla volta, a scatti, quando la
+     fascia arriva in vista. Lo script sotto nasconde le parole SOLO quando
+     gira (classe coro-pronto): senza JS il claim resta visibile da subito. */
+  .linea {
+    display: block;
+  }
+  .parola {
+    display: inline-block;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    [data-coro].coro-pronto .parola {
+      opacity: 0;
+      transform: translateY(0.45em);
+    }
+    [data-coro].coro-on .parola {
+      animation-name: parola-coro;
+      animation-duration: 0.32s;
+      animation-fill-mode: forwards;
+      animation-timing-function: var(--ease-out-quart);
+      animation-delay: calc(var(--i) * 75ms);
+    }
+  }
+  @keyframes parola-coro {
+    from {
+      opacity: 0;
+      transform: translateY(0.45em);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
   }
   .paese::after {
     content: "";
@@ -132,3 +207,23 @@ const righeClaim = societa.claimHome.split(/\r?\n/).filter(Boolean);
     text-decoration: underline;
   }
 </style>
+<script>
+  // Coro del claim: quando la fascia entra in vista, le parole partono una
+  // alla volta (i ritardi stanno nel CSS, qui si accende solo la classe).
+  // coro-pronto nasconde le parole SOLO a script attivo: senza JS, o con
+  // reduced-motion, il claim resta semplicemente visibile.
+  const claim = document.querySelector<HTMLElement>("[data-coro]");
+  if (claim && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    claim.classList.add("coro-pronto");
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          claim.classList.add("coro-on");
+          io.disconnect();
+        }
+      },
+      { rootMargin: "0px 0px -25% 0px" }
+    );
+    io.observe(claim);
+  }
+</script>

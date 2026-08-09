@@ -49,7 +49,7 @@ const ogImage = new URL("/img/og.jpg", Astro.site ?? Astro.url).href;
       // Dove view() esiste ci pensa il CSS e questo script non tocca nulla.
       const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (!reduced && !CSS.supports("animation-timeline: view()")) {
-        const titles = document.querySelectorAll("main h2");
+        const titles = document.querySelectorAll("main h2, main [data-reveal]");
         const io = new IntersectionObserver(
           (entries) => {
             for (const e of entries) {
