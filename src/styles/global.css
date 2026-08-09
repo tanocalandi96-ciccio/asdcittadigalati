@@ -17,3 +17,50 @@ h1, h2, h3 { font-family: var(--font-display); text-transform: uppercase; line-h
 .font-body { font-family: var(--font-body); }
 img { max-width: 100%; display: block; }
 :focus-visible { outline: 2px solid var(--giallo); outline-offset: 2px; }
+
+/* Transizioni tra pagine (View Transitions cross-documento, solo CSS).
+   Niente router client: le pagine restano navigazioni vere e ogni script
+   riparte da zero come sempre. Chrome/Edge/Safari fanno la scena continua,
+   Firefox naviga normalmente. La testata resta ferma (nome in Header.astro),
+   la foto delle news si trasforma nella copertina dell'articolo (nomi in
+   NewsCard.astro e news/[slug].astro). */
+@view-transition {
+  navigation: auto;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root) {
+    animation-name: pagina-esce;
+    animation-duration: 0.2s;
+    animation-timing-function: ease-in;
+    animation-fill-mode: both;
+  }
+  ::view-transition-new(root) {
+    animation-name: pagina-entra;
+    animation-duration: 0.32s;
+    animation-timing-function: var(--ease-out-quart);
+    animation-fill-mode: both;
+  }
+}
+@keyframes pagina-esce {
+  to {
+    opacity: 0;
+    transform: translateY(-0.75rem);
+  }
+}
+@keyframes pagina-entra {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem);
+  }
+}
+
+/* Con reduced-motion lo scambio e' istantaneo: si spegne anche la
+   dissolvenza predefinita del browser. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

@@ -24,7 +24,9 @@ const path = Astro.url.pathname;
   </nav>
 </header>
 <style>
-  .site-header { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem clamp(1rem, 4vw, 2.5rem); position: sticky; top: 0; background: var(--bg); z-index: 50; }
+  /* view-transition-name: nel cambio pagina la testata vive in un gruppo suo,
+     identico su ogni pagina, quindi resta ferma mentre il resto scorre. */
+  .site-header { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem clamp(1rem, 4vw, 2.5rem); position: sticky; top: 0; background: var(--bg); z-index: 50; view-transition-name: testata; }
   .brand { display: flex; gap: 0.6rem; align-items: center; color: var(--text); text-decoration: none; font-family: var(--font-display); font-size: 1.15rem; white-space: nowrap; flex-shrink: 0; }
   ul { display: flex; gap: 1.5rem; list-style: none; padding: 0; margin: 0; }
   a { color: var(--text); text-decoration: none; }
