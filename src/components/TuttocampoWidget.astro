@@ -77,7 +77,6 @@ const MIN_HEIGHT: Record<WidgetType, string> = {
 };
 
 const boxId = `widget-box-${type}`;
-const iframeId = `tuttocampo-widget-${type}`;
 const fallbackId = `widget-fallback-${type}`;
 ---
 <div class="tuttocampo-widget" style={{ "--widget-min-height": MIN_HEIGHT[type] }}>
@@ -96,19 +95,40 @@ const fallbackId = `widget-fallback-${type}`;
         Il widget non è al momento disponibile.{" "}
         <a href={TEAM_PAGE} target="_blank" rel="noopener noreferrer">Scheda su Tuttocampo</a>
       </p>
-      <script define:vars={{ boxId, iframeId, fallbackId }}>
+      <script define:vars={{ boxId, fallbackId }}>
+        // L'iframe non e' nel markup: EmbedConsenso lo clona dentro il box
+        // solo dopo il consenso (subito se gia' salvato, altrimenti al click).
+        // Il timeout di 10s puo' quindi partire solo quando l'iframe compare
+        // per davvero, altrimenti scatterebbe anche a consenso non dato,
+        // nascondendo pure il prompt di consenso stesso.
         const box = document.getElementById(boxId);
-        const iframe = document.getElementById(iframeId);
         const fallbackText = document.getElementById(fallbackId);
-        const timeoutId = window.setTimeout(() => {
-          box?.classList.add("widget-failed");
-          fallbackText?.classList.remove("hidden");
-        }, 10000);
-        iframe?.addEventListener("load", () => {
-          window.clearTimeout(timeoutId);
-          box?.classList.remove("widget-failed");
-          fallbackText?.classList.add("hidden");
-        });
+
+        function aggancia(iframe) {
+          const timeoutId = window.setTimeout(() => {
+            box?.classList.add("widget-failed");
+            fallbackText?.classList.remove("hidden");
+          }, 10000);
+          iframe.addEventListener("load", () => {
+            window.clearTimeout(timeoutId);
+            box?.classList.remove("widget-failed");
+            fallbackText?.classList.add("hidden");
+          });
+        }
+
+        const iframeEsistente = box?.querySelector("iframe");
+        if (iframeEsistente) {
+          aggancia(iframeEsistente);
+        } else if (box) {
+          const osservatore = new MutationObserver(() => {
+            const iframe = box.querySelector("iframe");
+            if (iframe) {
+              osservatore.disconnect();
+              aggancia(iframe);
+            }
+          });
+          osservatore.observe(box, { childList: true, subtree: true });
+        }
       </script>
     </>
   ) : (
