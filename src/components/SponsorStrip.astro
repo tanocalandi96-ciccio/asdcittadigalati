@@ -109,16 +109,19 @@ const sponsors = (await getCollection("sponsor")).sort(
     padding: 0 clamp(1.25rem, 3vw, 2.5rem);
   }
   .logo-img {
-    height: 2.5rem;
+    /* I loghi reali sono striscioni con testo (foto 1014x660), non marchi
+       secchi: sotto i 4.5rem diventano francobolli illeggibili. */
+    height: clamp(3.75rem, 8vw, 5rem);
     width: auto;
+    border-radius: 4px;
     filter: grayscale(1);
     transition: filter 0.3s var(--ease-out-quart);
   }
   .logo-item.main .logo-img {
-    height: 4rem;
+    height: clamp(5rem, 10vw, 7rem);
   }
   .logo-item.tecnico .logo-img {
-    height: 3rem;
+    height: clamp(4.25rem, 9vw, 6rem);
   }
   .logo-item:hover .logo-img,
   .logo-item:focus-within .logo-img {
