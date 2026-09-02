@@ -19,7 +19,7 @@ const sponsors = (await getCollection("sponsor")).sort(
       <div class="marquee-track">
         <ul class="logos">
           {sponsors.map((sponsor) => (
-            <li class:list={["logo-item", sponsor.data.livello]}>
+            <li class:list={["logo-item", sponsor.data.livello]} data-nome={sponsor.data.nome}>
               {sponsor.data.url ? (
                 <a href={sponsor.data.url} target="_blank" rel="noopener noreferrer" class="logo-link">
                   <img src={sponsor.data.logo} alt={`Logo ${sponsor.data.nome}`} class="logo-img" loading="lazy" />
@@ -32,12 +32,19 @@ const sponsors = (await getCollection("sponsor")).sort(
         </ul>
         <ul class="logos" aria-hidden="true">
           {sponsors.map((sponsor) => (
-            <li class:list={["logo-item", sponsor.data.livello]}>
+            <li class:list={["logo-item", sponsor.data.livello]} data-nome={sponsor.data.nome}>
               <img src={sponsor.data.logo} alt="" class="logo-img" loading="lazy" />
             </li>
           ))}
         </ul>
       </div>
+    </div>
+    {/* Anteprima grande al passaggio del mouse: i loghi reali sono striscioni
+        con testo, nel nastro si riconoscono ma non si leggono. Elemento
+        riempito e posizionato dallo script; solo puntatori fini. */}
+    <div class="logo-anteprima" data-logo-anteprima aria-hidden="true">
+      <img alt="" />
+      <p class="font-body"></p>
     </div>
   </section>
 )}
@@ -148,3 +155,76 @@ const sponsors = (await getCollection("sponsor")).sort(
     }
   }
 </style>
+<style>
+  .logo-anteprima {
+    position: fixed;
+    z-index: 70;
+    max-width: min(420px, 86vw);
+    background: oklch(0.98 0.005 75);
+    border: 1px solid var(--oro);
+    box-shadow: 0 14px 40px oklch(0.15 0.04 265 / 0.35);
+    padding: 0.5rem 0.5rem 0.35rem;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.18s var(--ease-out-quart), transform 0.18s var(--ease-out-quart);
+  }
+  .logo-anteprima.visibile {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .logo-anteprima img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 3px;
+  }
+  .logo-anteprima p {
+    margin: 0.3rem 0 0;
+    text-align: center;
+    font-size: 0.8rem;
+    color: oklch(0.3 0.04 265);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .logo-anteprima { transition: none; }
+  }
+</style>
+<script>
+  // Anteprima grande dei loghi: segue l'elemento su cui sta il mouse, sopra
+  // il nastro (o sotto se non c'e' spazio). Solo con puntatore fine: sul
+  // touch non esiste hover e il tocco deve restare il click del link.
+  const scheda = document.querySelector<HTMLElement>("[data-logo-anteprima]");
+  if (scheda && matchMedia("(pointer: fine)").matches) {
+    const img = scheda.querySelector("img")!;
+    const didascalia = scheda.querySelector("p")!;
+
+    const mostra = (voce: HTMLElement) => {
+      const logo = voce.querySelector<HTMLImageElement>(".logo-img");
+      if (!logo) return;
+      img.src = logo.src;
+      didascalia.textContent = voce.dataset.nome ?? "";
+      scheda.classList.add("visibile");
+      const r = voce.getBoundingClientRect();
+      // larghezza reale solo dopo il primo paint: misurata qui va bene lo stesso
+      const w = scheda.offsetWidth || 360;
+      const h = scheda.offsetHeight || 280;
+      const x = Math.min(Math.max(r.left + r.width / 2 - w / 2, 8), innerWidth - w - 8);
+      const sopra = r.top - h - 14;
+      scheda.style.left = `${x}px`;
+      scheda.style.top = `${sopra > 8 ? sopra : r.bottom + 14}px`;
+    };
+
+    const nastro = document.querySelector(".marquee");
+    nastro?.addEventListener("mouseover", (e) => {
+      const voce = (e.target as HTMLElement).closest<HTMLElement>(".logo-item");
+      if (voce) mostra(voce);
+    });
+    nastro?.addEventListener("mouseleave", () => scheda.classList.remove("visibile"));
+    // Tastiera: i loghi con link prendono il focus, stessa anteprima.
+    nastro?.addEventListener("focusin", (e) => {
+      const voce = (e.target as HTMLElement).closest<HTMLElement>(".logo-item");
+      if (voce) mostra(voce);
+    });
+    nastro?.addEventListener("focusout", () => scheda.classList.remove("visibile"));
+  }
+</script>
