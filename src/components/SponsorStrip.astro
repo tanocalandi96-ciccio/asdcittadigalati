@@ -106,6 +106,11 @@ const sponsors = (await getCollection("sponsor")).sort(
       animation-play-state: paused;
     }
   }
+  /* Sul touch la pausa e' un toggle esplicito: tocca per fermare e leggere,
+     ritocca per far ripartire (classe gestita dallo script). */
+  .marquee.fermo .marquee-track {
+    animation-play-state: paused;
+  }
   @keyframes marquee-scroll {
     from { transform: translateX(0); }
     to { transform: translateX(-50%); }
@@ -122,17 +127,17 @@ const sponsors = (await getCollection("sponsor")).sort(
   .logo-img {
     /* I loghi reali sono striscioni con testo (foto 1014x660), non marchi
        secchi: sotto i 4.5rem diventano francobolli illeggibili. */
-    height: clamp(4.5rem, 8vw, 5rem);
+    height: clamp(5.25rem, 8vw, 5.75rem);
     width: auto;
     border-radius: 4px;
     filter: grayscale(1);
     transition: filter 0.3s var(--ease-out-quart);
   }
   .logo-item.main .logo-img {
-    height: clamp(5.75rem, 10vw, 7rem);
+    height: clamp(6.5rem, 10vw, 7.5rem);
   }
   .logo-item.tecnico .logo-img {
-    height: clamp(5rem, 9vw, 6rem);
+    height: clamp(5.75rem, 9vw, 6.5rem);
   }
   .logo-item:hover .logo-img,
   .logo-item:focus-within .logo-img {
@@ -194,6 +199,17 @@ const sponsors = (await getCollection("sponsor")).sort(
   }
 </style>
 <script>
+  // Sul touch non esiste hover: il tocco sul nastro ferma la corsa per
+  // leggere i loghi, un secondo tocco la fa ripartire. I tocchi sui link
+  // restano navigazione e non togglano.
+  const nastroTouch = document.querySelector<HTMLElement>(".marquee");
+  if (nastroTouch && matchMedia("(hover: none)").matches) {
+    nastroTouch.addEventListener("click", (e) => {
+      if ((e.target as HTMLElement).closest("a")) return;
+      nastroTouch.classList.toggle("fermo");
+    });
+  }
+
   // Anteprima grande dei loghi: segue l'elemento su cui sta il mouse, sopra
   // il nastro (o sotto se non c'e' spazio). Solo con puntatore fine: sul
   // touch non esiste hover e il tocco deve restare il click del link.
